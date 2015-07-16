@@ -20,7 +20,9 @@ path = '/%s' % '/'.join(config.get('server').replace('https://', '').replace('ht
 @app.route(u'%s/%s' % (path, config.get('token').split(':')[-1], ), methods=('POST', ))
 def webhook():
     ''' WebHook API func '''
-    return json.dumps(request.json)
+    update = request.json
+    bot.sendMessage(chat_id=update.get('chat').get('id'), text=json.dumps(update))
+    return ''
 
 bot = telegram.Bot(token=config.get('token'))
 bot.setWebhook(u'%s/%s' % (config.get('server'), config.get('token').split(':')[-1], ))
