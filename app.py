@@ -16,7 +16,7 @@ with open(__config__, 'r') as cfr:
     config = json.loads(cfr.read())
 
 bot = telegram.Bot(token=config.get('token'))
-bot.setWebhook(u'%(server)s/%(token)s' % config)
+bot.setWebhook(u'%s/%s' % (config.get('server'), config.get('token').split(':')[-1], ))
 
 @app.route(u'/%s' % config.get('token').split(':')[-1])
 def webhook():
