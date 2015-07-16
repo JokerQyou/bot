@@ -18,7 +18,9 @@ with open(__config__, 'r') as cfr:
 bot = telegram.Bot(token=config.get('token'))
 bot.setWebhook(u'%s/%s' % (config.get('server'), config.get('token').split(':')[-1], ))
 
-@app.route(u'/%s' % config.get('token').split(':')[-1])
+path = '/%s' % '/'.join(config.get('server').replace('https://', '').replace('http://', '').split('/')[1:])
+
+@app.route(u'%s%s' % (path, config.get('token').split(':')[-1], ))
 def webhook():
     ''' WebHook API func '''
     print request.POST
