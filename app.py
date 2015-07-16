@@ -23,3 +23,5 @@ def webhook():
     ''' WebHook API func '''
     print request.POST
 
+app.run(host='0.0.0.0', port=config.get('port'))
+
