@@ -15,7 +15,7 @@ app.debug = False
 with open(__config__, 'r') as cfr:
     config = json.loads(cfr.read())
 
-bot = telegram.Bot(token=token_info)
+bot = telegram.Bot(token=config.get('token'))
 bot.setWebhook(u'%(server)s/%(token)s' % config)
 
 @app.route(u'/%s' % config.get('token').split(':')[-1])
