@@ -17,7 +17,7 @@ with open(__config__, 'r') as cfr:
 
 path = '/%s' % '/'.join(config.get('server').replace('https://', '').replace('http://', '').split('/')[1:])
 
-@app.route(u'%s/%s' % (path, config.get('token').split(':')[-1], ))
+@app.route(u'%s/%s' % (path, config.get('token').split(':')[-1], ), methods=('POST', ))
 def webhook():
     ''' WebHook API func '''
     print request.POST
