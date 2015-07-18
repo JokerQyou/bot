@@ -75,5 +75,5 @@ def main():
 
     app.run(host='0.0.0.0', port=config.get('port'))
 
-if __name__ == '__main__':
+if __name__ in ('__main__', u'eth0_bot', ):
     main()
