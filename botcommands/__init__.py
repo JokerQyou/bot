@@ -1,1 +1,1 @@
-from . import *
+from vimtips import vimtips
