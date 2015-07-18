@@ -1,9 +1,33 @@
 # coding: utf-8
 import requests
+from redis_wrap import get_hash
+from rq.decorators import job
 
 def vimtips(msg=None):
     try:
-        tip = requests.get('http://vim-tips.com/random_tips/json').json()
+        existing_tips = get_hash('vimtips')
+        _len = len(existing_tips)
+        if _len > 0:
+            _index = randint(0, _len - 1)
+            _k = existing_tips.keys()[_index]
+            _v = existing_tips[_k]
+            tip = {
+                'Content': _k, 
+                'Comment': _v
+            }
+        else:
+            tip = requests.get('http://vim-tips.com/random_tips/json').json()
+            existing_tips.update({
+                tip['Content']: tip['Comment']
+            })
+        collect_tip()
     except Exception as e:
-        return None
+        return u'哦，不小心玩坏了……'
     return u'%s\n%s' % (tip['Content'], tip['Comment'], )
+
+@job('default')
+def collect_tip():
+    tip = requests.get('http://vim-tips.com/random_tips/json').json()
+    get_hash('vimtips').update({
+        tip['Content']: tip['Comment']
+    })
