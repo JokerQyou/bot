@@ -8,6 +8,7 @@ from redis_wrap import get_hash, get_list
 import telegram
 
 from utils import *
+import botcommands
 
 __name__ = u'eth0_bot'
 __author__ = u'Joker_Qyou'
@@ -47,6 +48,10 @@ def handle_message(message):
         send_reply(text='很好，我收到了一张图片，然而这并没有什么卯月', message=message)
 
 def handle_command(text, message):
+    text = text[1:]
+    if hasattr(botcommands, text):
+        result = getattr(botcommands, text)(message)
+        return send_reply(text=result, message=message)
     text = u'%s 命令现在并没有什么卯月' % text
     send_reply(text=text, message=message)
 
