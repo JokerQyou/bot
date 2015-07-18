@@ -14,7 +14,7 @@ __author__ = u'Joker_Qyou'
 __config__ = u'config.json'
 
 app = flask.Flask(__name__)
-app.debug = False
+app.debug = True
 
 with open(__config__, 'r') as cfr:
     config = json.loads(cfr.read())
@@ -38,7 +38,7 @@ def webhook():
     return ''
 
 def handle_message(message):
-    text = smart_text(message.get('text', '')).strip()
+    text = message.get('text', '').strip()
     photo = message.get('photo', {})
     if text:
         if text.startswith('/'):
@@ -46,21 +46,23 @@ def handle_message(message):
         else:
             handle_text(text, message)
     if photo:
-        send_reply(text='很好，我收到了一张图片，然而这并没有什么卯用', message=message)
+        send_reply(text='很好，我收到了一张图片，然而这并没有什么卯月', message=message)
 
 def handle_command(text, message):
-    text = 'You used %s command' % text
-    bot.sendMessage(text=text, chat_id=message.get('chat').get('id'))
+    text = u'%s 命令现在并没有什么卯月' % text
+    send_reply(text=text, message=message)
 
 def handle_text(text, message):
-    text = '%s: %s' % (smart_text('复读机'), text, )
-    bot.sendMessage(text=text, chat_id=message.get('chat').get('id'))
+    text = u'%s: %s' % (u'复读机', text, )
+    send_reply(text=text, message=message)
 
-def send_reply(text=None, photo=None, emoji=None, audio=None, message=None):
+def send_reply(text=None, photo=None, emoji=None, audio=None, message=None, reply=True):
     if not message:
         raise RuntimeError('Dont know the chat id')
     if not text: return
-    bot.sendMessage(text=text, chat_id=message.get('chat').get('id'))
+    bot.sendMessage(text=smart_text(text), 
+                    chat_id=message.get('chat').get('id'), 
+                    reply_to_message_id=message.get('id'))
 
 bot = telegram.Bot(token=config.get('token'))
 bot.setWebhook('%s/%s' % (config.get('server'), config.get('token').split(':')[-1], ))
