@@ -25,10 +25,8 @@ raw_redis = redis.StrictRedis(**config.get('redis'))
 
 def init_redis():
     admins = get_list('admins')
-    if not admins:
+    if len(admins) == 0:
         [admins.append(admin) for admin in config.get('admins')]
-
-init_redis()
 
 @app.route('%s/%s' % (path, config.get('token').split(':')[-1], ), methods=('POST', ))
 def webhook():
@@ -64,8 +62,13 @@ def send_reply(text=None, photo=None, emoji=None, audio=None, message=None, repl
                     chat_id=message.get('chat').get('id'), 
                     reply_to_message_id=message.get('id'))
 
-bot = telegram.Bot(token=config.get('token'))
-bot.setWebhook('%s/%s' % (config.get('server'), config.get('token').split(':')[-1], ))
+def main():
+    init_redis()
 
-app.run(host='0.0.0.0', port=config.get('port'))
+    bot = telegram.Bot(token=config.get('token'))
+    bot.setWebhook('%s/%s' % (config.get('server'), config.get('token').split(':')[-1], ))
 
+    app.run(host='0.0.0.0', port=config.get('port'))
+
+if __name__ == '__main__':
+    main()
