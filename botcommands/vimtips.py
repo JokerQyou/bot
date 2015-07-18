@@ -1,7 +1,7 @@
 # coding: utf-8
 import requests
 
-def vimtips(msg):
+def vimtips(msg=None):
     try:
         tip = requests.get('http://vim-tips.com/random_tips/json').json()
     except Exception as e:
