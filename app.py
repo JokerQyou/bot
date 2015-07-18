@@ -23,6 +23,8 @@ with open(__config__, 'r') as cfr:
 path = '/%s' % '/'.join(config.get('server').replace('https://', '').replace('http://', '').split('/')[1:])
 
 raw_redis = redis.StrictRedis(**config.get('redis'))
+bot = telegram.Bot(token=config.get('token'))
+bot.setWebhook('%s/%s' % (config.get('server'), config.get('token').split(':')[-1], ))
 
 def init_redis():
     admins = get_list('admins')
@@ -69,10 +71,6 @@ def send_reply(text=None, photo=None, emoji=None, audio=None, message=None, repl
 
 def main():
     init_redis()
-
-    bot = telegram.Bot(token=config.get('token'))
-    bot.setWebhook('%s/%s' % (config.get('server'), config.get('token').split(':')[-1], ))
-
     app.run(host='0.0.0.0', port=config.get('port'))
 
 if __name__ in ('__main__', u'eth0_bot', ):
