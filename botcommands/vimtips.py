@@ -1,6 +1,8 @@
 # coding: utf-8
+from random import randint
+
 import requests
-from redis_wrap import get_hash
+from redis_wrap import get_hash, SYSTEMS
 from rq.decorators import job
 
 def vimtips(msg=None):
@@ -20,12 +22,13 @@ def vimtips(msg=None):
             existing_tips.update({
                 tip['Content']: tip['Comment']
             })
-        collect_tip()
+        collect_tip.delay()
     except Exception as e:
-        return u'哦，不小心玩坏了……'
-    return u'%s\n%s' % (tip['Content'], tip['Comment'], )
+        return '哦，不小心玩坏了……'
+    return '%s\n%s' % (tip['Content'], tip['Comment'], )
 
-@job('default')
+# Fetch a new tip in RQ queue
+@job('default', connection=SYSTEMS['default'], result_ttl=5)
 def collect_tip():
     tip = requests.get('http://vim-tips.com/random_tips/json').json()
     get_hash('vimtips').update({
