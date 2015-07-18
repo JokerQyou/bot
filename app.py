@@ -32,7 +32,7 @@ init_redis()
 def webhook():
     ''' WebHook API func '''
     update = request.json
-    bot.sendMessage(chat_id=update.get('message').get('chat').get('id'), text=json.dumps(update, indent=4))
+    handle_message(update.get('message'))
     return ''
 
 def handle_message(message):
