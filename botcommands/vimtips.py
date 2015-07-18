@@ -27,7 +27,7 @@ def vimtips(msg=None, debug=False):
         return '哦，不小心玩坏了……'
     result = '%s\n%s' % (tip['Content'], tip['Comment'], )
     if debug:
-        result = '%s\n%s' % (result, 'debug: 当前有 %d 条 vimtips')
+        result = '%s\n%s' % (result, ('debug: 当前有 %d 条 vimtips' % _len), )
     return result
 
 # Fetch a new tip in RQ queue
