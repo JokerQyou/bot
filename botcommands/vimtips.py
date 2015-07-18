@@ -5,7 +5,7 @@ import requests
 from redis_wrap import get_hash, SYSTEMS
 from rq.decorators import job
 
-def vimtips(msg=None):
+def vimtips(msg=None, debug=False):
     try:
         existing_tips = get_hash('vimtips')
         _len = len(existing_tips)
@@ -25,7 +25,10 @@ def vimtips(msg=None):
         collect_tip.delay()
     except Exception as e:
         return '哦，不小心玩坏了……'
-    return '%s\n%s' % (tip['Content'], tip['Comment'], )
+    result = '%s\n%s' % (tip['Content'], tip['Comment'], )
+    if debug:
+        result = '%s\n%s' % (result, 'debug: 当前有 %d 条 vimtips')
+    return result
 
 # Fetch a new tip in RQ queue
 @job('default', connection=SYSTEMS['default'], result_ttl=5)
