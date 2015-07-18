@@ -7,6 +7,8 @@ import redis
 from redis_wrap import get_hash, get_list
 import telegram
 
+from utils import *
+
 __name__ = u'eth0_bot'
 __author__ = u'Joker_Qyou'
 __config__ = u'config.json'
@@ -36,7 +38,7 @@ def webhook():
     return ''
 
 def handle_message(message):
-    text = message.get('text', '').strip()
+    text = smart_text(message.get('text', '')).strip()
     photo = message.get('photo', {})
     if text:
         if text.startswith('/'):
@@ -51,7 +53,7 @@ def handle_command(text, message):
     bot.sendMessage(text=text, chat_id=message.get('chat').get('id'))
 
 def handle_text(text, message):
-    text = '%s: %s' % ('复读机', text, )
+    text = '%s: %s' % (smart_text('复读机'), text, )
     bot.sendMessage(text=text, chat_id=message.get('chat').get('id'))
 
 def send_reply(text=None, photo=None, emoji=None, audio=None, message=None):
