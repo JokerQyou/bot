@@ -1,9 +1,11 @@
 # coding: utf-8
+from os import path
 import json
+
 from redis_wrap import get_hash, get_list
 
 __name__ = 'eth0_bot'
-__config__ = 'config.json'
+__config__ = path.abspath(path.join(path.dirname(__file__), 'config.json'))
 
 with open(__config__, 'r') as cfr:
     config = json.loads(cfr.read())
