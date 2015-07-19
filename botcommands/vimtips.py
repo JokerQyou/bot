@@ -37,11 +37,11 @@ def addvimtip(msg=None, debug=False):
     usage = '格式：\n/addvimtip\n内容\n解释'
     if not msg or not msg.get('text'):
         return usage
+    force_add = '/forceadd' in msg.get('text')
     parts = [i.strip() for i in msg.get('text').strip().split('\n')]
     if len(parts) < 3 or not all([bool(i) for i in parts]):
         return usage
 
-    force_add = '/forceadd' in parts
     content, comment = parts[1], parts[2]
     tips = get_hash('vimtips')
     if content in tips.keys():
