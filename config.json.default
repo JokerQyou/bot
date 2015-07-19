@@ -1,0 +1,11 @@
+{
+    "token": "123456789:ehuidfhgksdjbfuyhsbhjfdkj", 
+    "server": "test.com/bot", 
+    "port": 9003, 
+    "admins": ["Joker_Qyou"], 
+    "redis": {
+        "host": "localhost", 
+        "port": 6379, 
+        "db": 0
+    }
+}
