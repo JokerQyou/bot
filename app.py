@@ -40,7 +40,9 @@ def handle_message(message):
 def handle_command(text, message, debug=False):
     if '/debug' in text and message['from']['username'] in config.get('admins'):
         debug = True
-    texts = text.split(' ')
+    _texts = text.split(' ')
+    texts = []
+    [texts.extend(i.split('\n')) for i in _texts]
     command = texts[0][1:]
     if hasattr(botcommands, command):
         result = getattr(botcommands, command)(message, debug=debug)
