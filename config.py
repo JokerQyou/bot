@@ -2,6 +2,7 @@
 import json
 from redis_wrap import get_hash, get_list
 
+__name__ = 'eth0_bot'
 __config__ = 'config.json'
 
 with open(__config__, 'r') as cfr:
