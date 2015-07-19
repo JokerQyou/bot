@@ -44,7 +44,7 @@ def addvimtip(msg=None, debug=False):
 
     content, comment = parts[1], parts[2]
     tips = get_hash('vimtips')
-    if content in tips.keys():
+    if content in tips:
         if not force_add:
             return '这条 tip 已经存在了，希望覆盖的话可以使用 /forceadd 选项覆盖'
     tips.update({
