@@ -1,4 +1,5 @@
 # coding: utf-8
+import json
 from redis_wrap import get_hash, get_list
 
 __config__ = 'config.json'

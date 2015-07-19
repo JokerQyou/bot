@@ -5,7 +5,7 @@ import requests
 from redis_wrap import get_hash, SYSTEMS
 from rq.decorators import job
 
-from ..config import require_admin
+from config import require_admin
 
 def vimtips(msg=None, debug=False):
     try:
