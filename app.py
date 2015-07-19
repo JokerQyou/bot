@@ -4,44 +4,22 @@ import json
 import flask
 from flask import request
 import redis
-from redis_wrap import get_hash, get_list
 import telegram
 
+import config
 from utils import *
 import botcommands
 
-__name__ = u'eth0_bot'
-__author__ = u'Joker_Qyou'
-__config__ = u'config.json'
+__name__ = 'eth0_bot'
+__author__ = 'Joker_Qyou'
 
 app = flask.Flask(__name__)
 app.debug = True
 
-with open(__config__, 'r') as cfr:
-    config = json.loads(cfr.read())
+bot = telegram.Bot(token=config.TOKEN)
+bot.setWebhook('%s/%s' % (config.SERVER, config.TOKEN.split(':')[-1], ))
 
-path = '/%s' % '/'.join(config.get('server').replace('https://', '').replace('http://', '').split('/')[1:])
-
-raw_redis = redis.StrictRedis(**config.get('redis'))
-bot = telegram.Bot(token=config.get('token'))
-bot.setWebhook('%s/%s' % (config.get('server'), config.get('token').split(':')[-1], ))
-
-def get_config(key):
-    ''' Get raw config from redis with a prefix '''
-    list_keys = ('admins', )
-    hash_keys = (None, )
-    real_key = '%s:%s' % (str(__name__), key, )
-    if key in list_keys:
-        return get_list(real_key)
-    elif key in hash_keys:
-        return get_hash(real_key)
-
-def init_redis():
-    admins = get_config('admins')
-    if len(admins) == 0:
-        [admins.append(admin) for admin in config.get('admins')]
-
-@app.route('%s/%s' % (path, config.get('token').split(':')[-1], ), methods=('POST', ))
+@app.route('%s/%s' % (path, config.TOKEN.split(':')[-1], ), methods=('POST', ))
 def webhook():
     ''' WebHook API func '''
     update = request.json
@@ -60,7 +38,7 @@ def handle_message(message):
         send_reply(text='很好，我收到了一张图片，然而这并没有什么卯月', message=message)
 
 def handle_command(text, message, debug=False):
-    if '/debug' in text and message['from']['username'] in get_config('admins'):
+    if '/debug' in text and message['from']['username'] in config.get('admins'):
         debug = True
     texts = text.split(' ')
     command = texts[0][1:]
@@ -83,8 +61,7 @@ def send_reply(text=None, photo=None, emoji=None, audio=None, message=None, repl
                     reply_to_message_id=message.get('id'))
 
 def main():
-    init_redis()
-    app.run(host='0.0.0.0', port=config.get('port'))
+    app.run(host='0.0.0.0', port=config.PORT)
 
 if __name__ in ('__main__', u'eth0_bot', ):
     main()

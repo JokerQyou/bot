@@ -5,6 +5,8 @@ import requests
 from redis_wrap import get_hash, SYSTEMS
 from rq.decorators import job
 
+from ..config import require_admin
+
 def vimtips(msg=None, debug=False):
     try:
         existing_tips = get_hash('vimtips')
@@ -29,6 +31,10 @@ def vimtips(msg=None, debug=False):
     if debug:
         result = '%s\n%s' % (result, ('debug: 当前有 %d 条 vimtips' % _len), )
     return result
+
+@require_admin
+def addvimtip(msg=None, debug=False):
+    return 'not ready'
 
 # Fetch a new tip in RQ queue
 @job('default', connection=SYSTEMS['default'], result_ttl=5)
