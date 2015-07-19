@@ -7,7 +7,7 @@ __config__ = 'config.json'
 with open(__config__, 'r') as cfr:
     config = json.loads(cfr.read())
 
-path = '/%s' % '/'.join(config.get('server').replace('https://', '').replace('http://', '').split('/')[1:])
+PATH = '/%s' % '/'.join(config.get('server').replace('https://', '').replace('http://', '').split('/')[1:])
 
 TOKEN = config.get('token')
 SERVER = config.get('server')

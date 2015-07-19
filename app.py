@@ -19,7 +19,7 @@ app.debug = True
 bot = telegram.Bot(token=config.TOKEN)
 bot.setWebhook('%s/%s' % (config.SERVER, config.TOKEN.split(':')[-1], ))
 
-@app.route('%s/%s' % (path, config.TOKEN.split(':')[-1], ), methods=('POST', ))
+@app.route('%s/%s' % (config.PATH, config.TOKEN.split(':')[-1], ), methods=('POST', ))
 def webhook():
     ''' WebHook API func '''
     update = request.json
