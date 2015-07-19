@@ -54,7 +54,7 @@ def handle_command(text, message, debug=False):
 
 def handle_text(text, message):
     text = u'%s: %s' % (u'复读机', text, )
-    send_reply(text=text, message=message)
+    # send_reply(text=text, message=message)
 
 def send_reply(text=None, photo=None, emoji=None, audio=None, message=None, reply=True):
     if not message:
