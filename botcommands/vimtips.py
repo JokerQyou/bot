@@ -50,7 +50,7 @@ def addvimtip(msg=None, debug=False):
     tips.update({
         content: comment
     })
-    return '添加了一条 vimtip：\n%s\n%s' % (content, comment, )
+    return u'添加了一条 vimtip：\n%s\n%s' % (content, comment, )
 
 # Fetch a new tip in RQ queue
 @job('default', connection=SYSTEMS['default'], result_ttl=5)
