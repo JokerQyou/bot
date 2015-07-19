@@ -26,8 +26,18 @@ raw_redis = redis.StrictRedis(**config.get('redis'))
 bot = telegram.Bot(token=config.get('token'))
 bot.setWebhook('%s/%s' % (config.get('server'), config.get('token').split(':')[-1], ))
 
+def get_config(key):
+    ''' Get raw config from redis with a prefix '''
+    list_keys = ('admins', )
+    hash_keys = (None, )
+    real_key = '%s:%s' % (str(__name__), key, )
+    if key in list_keys:
+        return get_list(real_key)
+    elif key in hash_keys:
+        return get_hash(real_key)
+
 def init_redis():
-    admins = get_list('admins')
+    admins = get_config('admins')
     if len(admins) == 0:
         [admins.append(admin) for admin in config.get('admins')]
 
@@ -50,7 +60,7 @@ def handle_message(message):
         send_reply(text='很好，我收到了一张图片，然而这并没有什么卯月', message=message)
 
 def handle_command(text, message, debug=False):
-    if '/debug' in text:
+    if '/debug' in text and message['from']['username'] in get_config('admins'):
         debug = True
     texts = text.split(' ')
     command = texts[0][1:]
