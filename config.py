@@ -29,13 +29,13 @@ def init_redis():
         [admins.append(admin) for admin in config.get('admins')]
 
 def require_admin(func):
-    def wrapper(**kwargs):
-        msg = kwargs.get('msg', None)
+    def wrapper(*args, **kwargs):
+        msg = kwargs.get('msg', None) if len(args) == 0 else args[0]
         if not msg:
             return ''
         if msg['from']['username'] not in get('admins'):
             return u'这个功能只有管理员可以使用'
-        return func(**kwargs)
+        return func(*args, **kwargs)
     return wrapper
 
 init_redis()
