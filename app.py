@@ -44,7 +44,7 @@ def handle_command(text, message, debug=False):
     texts = []
     [texts.extend(i.split('\n')) for i in _texts]
     command = texts[0][1:]
-    if not command.isalnum():
+    if not smart_text(command).isalnum():
         return send_reply(text='机器人酱并不懂你发的那是什么玩意', message=message)
     if hasattr(botcommands, command):
         result = getattr(botcommands, command)(message, debug=debug)
