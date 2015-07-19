@@ -34,7 +34,23 @@ def vimtips(msg=None, debug=False):
 
 @require_admin
 def addvimtip(msg=None, debug=False):
-    return 'not ready'
+    usage = '格式：\n/addvimtip\n内容\n解释'
+    if not msg or not msg.get('text'):
+        return usage
+    parts = [i.strip() for i in msg.get('text').strip().split('\n')]
+    if len(parts) < 3 or not all([bool(i) for i in parts]):
+        return usage
+
+    force_add = '/forceadd' in parts
+    content, comment = parts[1], parts[2]
+    tips = get_hash('vimtips')
+    if content in tips.keys():
+        if not force_add:
+            return '这条 tip 已经存在了，希望覆盖的话可以使用 /forceadd 选项覆盖'
+    tips.update({
+        content: comment
+    })
+    return '添加了一条 vimtip：\n%s\n%s' % (content, comment, )
 
 # Fetch a new tip in RQ queue
 @job('default', connection=SYSTEMS['default'], result_ttl=5)
