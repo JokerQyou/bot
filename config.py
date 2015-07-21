@@ -11,7 +11,8 @@ with open(__config__, 'r') as cfr:
     config = json.loads(cfr.read())
 
 PATH = '/%s' % '/'.join(
-    config['server'].replace('https://', '').replace('http://', '').split('/')[1:]
+    config['server'].replace('https://', '')
+    .replace('http://', '').split('/')[1:]
 )
 
 TOKEN = config.get('token')

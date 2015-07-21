@@ -1,8 +1,9 @@
 # coding: utf-8
 import json
 import logging
-import time
+# import time
 
+import config
 import certifi
 import paho.mqtt.client as mqtt
 
@@ -13,6 +14,7 @@ logger.setLevel(logging.DEBUG)
 def on_msg(client, userdata, mqtt_msg):
     try:
         msg = json.loads(mqtt_msg.payload)
+        print msg
     except Exception as e:
         print e
         return
@@ -20,22 +22,28 @@ def on_msg(client, userdata, mqtt_msg):
 
 def on_disconnect(client, userdata, return_code):
     logger.info(u'disconnected, code: %d, will reconnect', return_code)
+    port = config.get('port', (8883 if config.get('use_ssl', False) else 1883))
     client.connect(
         config.get('host'),
-        port=config.get('port', (8883 if config.get('use_ssl', False) else 1883)),
+        port=port,
         keepalive=config.get('keepalive', 60)
     )
+
 
 def on_connect(client, userdata, flags, return_code):
     logger.info(u'connected, code: %d', return_code)
 
+
 class PiClient(object):
-    ''' A client which connects to Mosca server and receive commands from there, and return local queried result. '''
+    '''
+    A client which connects to Mosca server and receive commands from there,
+    and return local queried result.
+    '''
 
     def __init__(self, mqtt_config, handlers):
         self.__client = mqtt.Client(
             client=mqtt_config.get('client_id'),
-            protocol=mqtt.MQTTv31, 
+            protocol=mqtt.MQTTv31,
             clean_session=mqtt_config.get('clean_session', True)
         )
         if mqtt_config.get('use_ssl', False):
@@ -47,9 +55,13 @@ class PiClient(object):
         self.__client.on_disconnect = handlers.get('on_disconnect', None)
         self.__client.on_connect = handlers.get('on_connect', None)
 
+        port = mqtt_config.get(
+            'port',
+            (8883 if mqtt_config.get('use_ssl', False) else 1883)
+        )
         self.__client.connect(
             mqtt_config.get('host'),
-            port=mqtt_config.get('port', (8883 if mqtt_config.get('use_ssl', False) else 1883)),
+            port=port,
             keepalive=mqtt_config.get('keepalive', 60)
         )
 
