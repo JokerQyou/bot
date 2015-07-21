@@ -1,9 +1,11 @@
 # coding: utf-8
 import six
 
+
 def smart_text(s, encoding='utf-8', strings_only=False, errors='strict'):
     """
-    This function was excerpted from Django project, modifications have been applied.
+    This function was excerpted from Django project, 
+    modifications have been applied.
     The original license is as follows:
     ```
     Copyright (c) Django Software Foundation and individual contributors.

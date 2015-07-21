@@ -10,11 +10,14 @@ __config__ = path.abspath(path.join(path.dirname(__file__), 'config.json'))
 with open(__config__, 'r') as cfr:
     config = json.loads(cfr.read())
 
-PATH = '/%s' % '/'.join(config.get('server').replace('https://', '').replace('http://', '').split('/')[1:])
+PATH = '/%s' % '/'.join(
+    config['server'].replace('https://', '').replace('http://', '').split('/')[1:]
+)
 
 TOKEN = config.get('token')
 SERVER = config.get('server')
 PORT = config.get('port')
+
 
 def get(key):
     ''' Get raw config from redis with a prefix '''
@@ -26,10 +29,12 @@ def get(key):
     elif key in hash_keys:
         return get_hash(real_key)
 
+
 def init_redis():
     admins = get('admins')
     if len(admins) == 0:
         [admins.append(admin) for admin in config.get('admins')]
+
 
 def require_admin(func):
     def wrapper(*args, **kwargs):

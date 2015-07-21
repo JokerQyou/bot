@@ -9,6 +9,7 @@ import paho.mqtt.client as mqtt
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+
 def on_msg(client, userdata, mqtt_msg):
     try:
         msg = json.loads(mqtt_msg.payload)
@@ -16,11 +17,12 @@ def on_msg(client, userdata, mqtt_msg):
         print e
         return
 
+
 def on_disconnect(client, userdata, return_code):
     logger.info(u'disconnected, code: %d, will reconnect', return_code)
     client.connect(
-        config.get('host'), 
-        port=config.get('port', (8883 if config.get('use_ssl', False) else 1883)), 
+        config.get('host'),
+        port=config.get('port', (8883 if config.get('use_ssl', False) else 1883)),
         keepalive=config.get('keepalive', 60)
     )
 
@@ -32,7 +34,7 @@ class PiClient(object):
 
     def __init__(self, mqtt_config, handlers):
         self.__client = mqtt.Client(
-            client=mqtt_config.get('client_id'), 
+            client=mqtt_config.get('client_id'),
             protocol=mqtt.MQTTv31, 
             clean_session=mqtt_config.get('clean_session', True)
         )
@@ -46,10 +48,9 @@ class PiClient(object):
         self.__client.on_connect = handlers.get('on_connect', None)
 
         self.__client.connect(
-            mqtt_config.get('host'), 
-            port=mqtt_config.get('port', (8883 if mqtt_config.get('use_ssl', False) else 1883)), 
+            mqtt_config.get('host'),
+            port=mqtt_config.get('port', (8883 if mqtt_config.get('use_ssl', False) else 1883)),
             keepalive=mqtt_config.get('keepalive', 60)
         )
 
 client = PiClient({}, {})
-

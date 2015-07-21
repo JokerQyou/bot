@@ -7,6 +7,7 @@ from rq.decorators import job
 
 from config import require_admin
 
+
 def vimtips(msg=None, debug=False):
     try:
         existing_tips = get_hash('vimtips')
@@ -16,7 +17,7 @@ def vimtips(msg=None, debug=False):
             _k = existing_tips.keys()[_index]
             _v = existing_tips[_k]
             tip = {
-                'Content': _k, 
+                'Content': _k,
                 'Comment': _v
             }
         else:
@@ -26,11 +27,13 @@ def vimtips(msg=None, debug=False):
             })
         collect_tip.delay()
     except Exception as e:
+        print e
         return '哦，不小心玩坏了……'
     result = '%s\n%s' % (tip['Content'], tip['Comment'], )
     if debug:
         result = '%s\n%s' % (result, ('debug: 当前有 %d 条 vimtips' % _len), )
     return result
+
 
 @require_admin
 def addvimtip(msg=None, debug=False):
@@ -51,6 +54,7 @@ def addvimtip(msg=None, debug=False):
         content: comment
     })
     return u'添加了一条 vimtip：\n%s\n%s' % (content, comment, )
+
 
 # Fetch a new tip in RQ queue
 @job('default', connection=SYSTEMS['default'], result_ttl=5)
