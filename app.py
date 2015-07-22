@@ -42,10 +42,7 @@ def handle_command(text, message, debug=False):
     if '/debug' in text \
             and message['from']['username'] in config.get('admins'):
         debug = True
-    _texts = text.split(' ')
-    texts = []
-    [texts.extend(i.split('\n')) for i in _texts]
-    command = texts[0][1:]
+    command, options, words = extract_texts(message.get('text'))
     if not smart_text(command).isalnum():
         return send_reply(text='机器人酱并不懂你发的那是什么玩意', message=message)
     if hasattr(botcommands, command):

@@ -71,3 +71,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             s = ' '.join(smart_text(arg, encoding, strings_only, errors)
                          for arg in s)
     return s.encode(encoding)
+
+
+def extract_texts(text):
+    ''' Extract words and command from a given message text '''
+    _texts = text.split(' ')
+    texts = []
+    [texts.extend(i.split('\n')) for i in _texts]
+    if not texts[0].startswith('/'):
+        raise RuntimeError('这跟说好的不一样啊')
+    command = texts[0]
+    words, options = [], []
+    for t in texts[1:]:
+        if t.startswith('/'):
+            options.append(t)
+        else:
+            words.append(t)
+
+    return command, options, words
