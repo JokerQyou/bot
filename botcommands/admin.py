@@ -23,7 +23,7 @@ def addadmin(msg=None, debug=False):
             admins.append(_admin)
             added.append(_admin)
 
-    return u'添加了 %d 位管理员：\n%s' % (len(words), u'、'.join(added), )
+    return u'添加了 %d 位管理员：\n%s' % (len(added), u'、'.join(added), )
 
 
 @require_admin
