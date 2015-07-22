@@ -17,7 +17,7 @@ def addadmin(msg=None, debug=False):
     if not words:
         return u'拜托，你想添加谁为管理员？一次性说完啦！'
     admins = config.get('admins')
-    for _admin in words[1:]:
+    for _admin in words:
         admins.append(_admin)
 
     return u'添加了 %d 位管理员：\n%s' % (len(words[1:]), u'、'.join(words[1:]), )
