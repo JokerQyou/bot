@@ -66,8 +66,8 @@ def send_reply(text=None, photo=None, emoji=None,
         raise RuntimeError('Dont know the chat id')
     if not text:
         return
-    bot.sendMessage(text=smart_text(text), 
-                    chat_id=message.get('chat').get('id'), 
+    bot.sendMessage(text=smart_text(text),
+                    chat_id=message.get('chat').get('id'),
                     reply_to_message_id=message.get('id'))
 
 
