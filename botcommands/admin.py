@@ -15,7 +15,7 @@ def addadmin(msg=None, debug=False):
     ''' Add a user as admin '''
     command, options, words = extract_texts(msg['text'])
     if not words:
-        return u'你想添加谁为管理员？'
+        return u'拜托，你想添加谁为管理员？一次性说完啦！'
     admins = config.get('admins')
     for _admin in words[1:]:
         admins.append(_admin)
@@ -30,7 +30,7 @@ def deladmin(msg=None, debug=False):
     command, options, words = extract_texts(msg['text'])
     non_admins, removed = [], []
     if not words:
-        return u'你想删除谁的管理员权限？'
+        return u'拜托，你想删除谁的管理员权限？一次性说完啦！'
     for _admin in words:
         if _admin not in admins:
             non_admins.append(_admin)
