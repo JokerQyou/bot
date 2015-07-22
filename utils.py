@@ -80,7 +80,7 @@ def extract_texts(text):
     [texts.extend(i.split('\n')) for i in _texts]
     if not texts[0].startswith('/'):
         raise RuntimeError('这跟说好的不一样啊')
-    command = texts[0]
+    command = texts[0][1:]  # Drop the starting slash
     words, options = [], []
     for t in texts[1:]:
         if t.startswith('/'):
