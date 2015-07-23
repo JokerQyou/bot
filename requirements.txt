@@ -1,0 +1,8 @@
+python-telegram-bot
+flask
+redis-wrap
+six
+paho-mqtt
+requests
+rq
+certifi
