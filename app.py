@@ -1,4 +1,5 @@
 # coding: utf-8
+import json
 import flask
 from flask import request
 import telegram
@@ -22,6 +23,8 @@ bot.setWebhook('%s/%s' % (config.SERVER, config.TOKEN.split(':')[-1], ))
 def webhook():
     ''' WebHook API func '''
     update = request.json
+    if app.debug:
+        print json.dumps(update, indent=4)
     handle_message(update.get('message'))
     return ''
 
