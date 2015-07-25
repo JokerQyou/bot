@@ -7,7 +7,9 @@ from utils import extract_texts
 @require_admin
 def listadmin(msg=None, debug=False):
     ''' List admins '''
-    return u'当前的管理员：\n%s' % u'\n'.join(config.get('admins'))
+    return u'当前的管理员：\n%s' % u'\n'.join(
+        [u'@%s' % person for person in config.get('admins')]
+    )
 
 
 @require_admin
@@ -18,7 +20,8 @@ def addadmin(msg=None, debug=False):
         return u'拜托，你想添加谁为管理员？一次性说完啦！'
     admins = config.get('admins')
     added = []
-    for _admin in words:
+    for person in words:
+        _admin = person[1:] if person.startswith('@') else person
         if _admin not in admins:
             admins.append(_admin)
             added.append(_admin)
@@ -36,7 +39,8 @@ def deladmin(msg=None, debug=False):
     response = u''
     if not words:
         return u'拜托，你想删除谁的管理员权限？一次性说完啦！'
-    for _admin in words:
+    for person in words:
+        _admin = person[1:] if person.startswith('@') else person
         if _admin == msg['from']['username']:
             failed.append(_admin)
             continue
