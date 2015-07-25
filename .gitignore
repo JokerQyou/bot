@@ -1,4 +1,4 @@
-.py[cod]
-.json
-.swp
+*.py[cod]
+*.json
+*.swp
 .DS_Store
