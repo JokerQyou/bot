@@ -61,11 +61,26 @@ def handle_text(text, message):
 
 
 def send_reply(text=None, photo=None, emoji=None,
-               audio=None, message=None, reply=True):
+               audio=None, video=None, fileobj=None,
+               location=None, message=None, reply=True):
     if not message:
         raise RuntimeError('Dont know the chat id')
+    # Currently text reply is the only supported type
     if not text:
         return
+    action = 'typing'
+    if photo:
+        action = 'upload_photo'
+    elif audio:
+        action = 'upload_audio'
+    elif video:
+        action = 'upload_video'
+    elif fileobj:
+        action = 'upload_document'
+    elif location:
+        action = 'find_location'
+    bot.sendChatAction(chat_id=message.get('chat').get('id'),
+                       action=action)
     bot.sendMessage(text=smart_text(text),
                     chat_id=message.get('chat').get('id'),
                     reply_to_message_id=message.get('id'))
