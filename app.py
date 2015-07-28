@@ -37,8 +37,8 @@ def handle_message(message):
             handle_command(text, message)
         else:
             handle_text(text, message)
-    if photo:
-        send_reply(text='很好，我收到了一张图片，然而这并没有什么卯月', message=message)
+    # if photo:
+    #     send_reply(text='很好，我收到了一张图片，然而这并没有什么卯月', message=message)
 
 
 def handle_command(text, message, debug=False):
@@ -51,8 +51,9 @@ def handle_command(text, message, debug=False):
     if hasattr(botcommands, command):
         result = getattr(botcommands, command)(message, debug=debug)
         return send_reply(text=result, message=message)
-    text = u'%s 命令现在并没有什么卯月' % command
-    send_reply(text=text, message=message)
+    if debug:
+        text = u'%s 命令现在并没有什么卯月' % command
+        send_reply(text=text, message=message)
 
 
 def handle_text(text, message):
