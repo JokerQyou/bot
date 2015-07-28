@@ -1,4 +1,4 @@
-# coding: utff-8
+# coding: utf-8
 import config
 from config import __bot__
 
