@@ -83,7 +83,7 @@ def send_reply(text=None, photo=None, emoji=None,
                        action=action)
     bot.sendMessage(text=smart_text(text),
                     chat_id=message.get('chat').get('id'),
-                    reply_to_message_id=message.get('id'))
+                    reply_to_message_id=message.get('message_id'))
 
 
 def main():
