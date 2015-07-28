@@ -3,6 +3,7 @@
     "server": "test.com/bot", 
     "port": 9003, 
     "admins": ["Joker_Qyou"], 
+    "owner": "Joker_Qyou", 
     "redis": {
         "host": "localhost", 
         "port": 6379, 

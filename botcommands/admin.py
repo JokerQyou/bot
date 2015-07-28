@@ -41,7 +41,12 @@ def deladmin(msg=None, debug=False):
         return u'拜托，你想删除谁的管理员权限？一次性说完啦！'
     for person in words:
         _admin = person[1:] if person.startswith('@') else person
+        # Cannot delete self
         if _admin == msg['from']['username']:
+            failed.append(_admin)
+            continue
+        # Cannot delete owner
+        if _admin == config.get('owner'):
             failed.append(_admin)
             continue
         if _admin not in admins:
