@@ -64,8 +64,9 @@ def list_commands(msg, debug=False):
     '''List all commands available'''
     commands = []
     for command in dir(botcommands):
-        if callable(getattr(botcommands, command)):
-            commands.append(u'%s - %s\n' % (command, command.func_doc, ))
+        attr = getattr(botcommands, command)
+        if callable(attr):
+            commands.append(u'%s - %s\n' % (command, attr.func_doc, ))
     return ''.join(commands)
 
 
