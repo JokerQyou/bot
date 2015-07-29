@@ -49,7 +49,8 @@ def handle_command(text, message, debug=False):
     if not smart_text(command).isalnum():
         return send_reply(text='机器人酱并不懂你发的那是什么玩意', message=message)
     if command == 'ls':
-        return send_reply(text=list_commands(), message=message)
+        return send_reply(text=list_commands(message, debug=debug),
+                          message=message)
     if hasattr(botcommands, command):
         result = getattr(botcommands, command)(message, debug=debug)
         return send_reply(text=result, message=message)
@@ -59,13 +60,13 @@ def handle_command(text, message, debug=False):
 
 
 @config.require_admin
-def list_commands():
+def list_commands(msg, debug=False):
     '''List all commands available'''
-    commands = u''
+    commands = []
     for command in dir(botcommands):
         if callable(getattr(botcommands, command)):
             commands.append(u'%s - %s\n' % (command, command.func_doc, ))
-    return commands
+    return ''.join(commands)
 
 
 def handle_text(text, message):
