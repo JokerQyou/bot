@@ -1,4 +1,5 @@
 # coding: utf-8
+from functools import wraps
 from os import path
 import json
 
@@ -56,6 +57,7 @@ def init_redis():
 
 
 def require_admin(func):
+    @wraps(func)
     def wrapper(*args, **kwargs):
         msg = kwargs.get('msg', None) if len(args) == 0 else args[0]
         if not msg:
