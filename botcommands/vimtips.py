@@ -9,6 +9,7 @@ from config import require_admin
 
 
 def vimtips(msg=None, debug=False):
+    '''显示一条 vim 使用技巧'''
     try:
         existing_tips = get_hash('vimtips')
         _len = len(existing_tips)
@@ -37,6 +38,7 @@ def vimtips(msg=None, debug=False):
 
 @require_admin
 def addvimtip(msg=None, debug=False):
+    '''（管理员）添加一条 vim 使用技巧'''
     usage = '命令格式：\n/addvimtip [/forceadd]\n内容\n解释'
     if not msg or not msg.get('text'):
         return usage

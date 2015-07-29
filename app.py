@@ -31,7 +31,7 @@ def webhook():
 
 def handle_message(message):
     text = message.get('text', '').strip()
-    photo = message.get('photo', {})
+    # photo = message.get('photo', {})
     if text:
         if text.startswith('/'):
             handle_command(text, message)
@@ -48,12 +48,24 @@ def handle_command(text, message, debug=False):
     command, options, words = extract_texts(message.get('text'))
     if not smart_text(command).isalnum():
         return send_reply(text='机器人酱并不懂你发的那是什么玩意', message=message)
+    if command == 'ls':
+        return send_reply(text=list_commands(), message=message)
     if hasattr(botcommands, command):
         result = getattr(botcommands, command)(message, debug=debug)
         return send_reply(text=result, message=message)
     if debug:
         text = u'%s 命令现在并没有什么卯月' % command
         send_reply(text=text, message=message)
+
+
+@config.require_admin
+def list_commands():
+    '''List all commands available'''
+    commands = u''
+    for command in dir(botcommands):
+        if callable(getattr(botcommands, command)):
+            commands.append(u'%s - %s\n' % (command, command.func_doc, ))
+    return commands
 
 
 def handle_text(text, message):

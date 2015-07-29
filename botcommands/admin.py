@@ -6,7 +6,7 @@ from utils import extract_texts
 
 @require_admin
 def listadmin(msg=None, debug=False):
-    ''' List admins '''
+    '''（管理员）列出管理员'''
     return u'当前的管理员：\n%s' % u'\n'.join(
         [u'@%s' % person for person in config.get('admins')]
     )
@@ -14,7 +14,7 @@ def listadmin(msg=None, debug=False):
 
 @require_admin
 def addadmin(msg=None, debug=False):
-    ''' Add a user as admin '''
+    '''（管理员）添加管理员'''
     command, options, words = extract_texts(msg['text'])
     if not words:
         return u'拜托，你想添加谁为管理员？一次性说完啦！'
@@ -31,7 +31,7 @@ def addadmin(msg=None, debug=False):
 
 @require_admin
 def deladmin(msg=None, debug=False):
-    ''' Delete an admin (cannot delete self) '''
+    '''（管理员）删除管理员'''
     admins = config.get('admins')
     command, options, words = extract_texts(msg['text'])
     non_admins, removed = [], []
