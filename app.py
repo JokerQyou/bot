@@ -1,7 +1,10 @@
 # coding: utf-8
 import json
+
 import flask
 from flask import request
+from rq.decorators import job
+from redis_wrap import SYSTEMS
 import telegram
 
 import config
@@ -41,6 +44,7 @@ def handle_message(message):
     #     send_reply(text='很好，我收到了一张图片，然而这并没有什么卯月', message=message)
 
 
+@job('reply', connection=SYSTEMS['default'], result_ttl=5)
 def handle_command(text, message, debug=False):
     if '/debug' in text \
             and message['from']['username'] in config.get('admins'):
