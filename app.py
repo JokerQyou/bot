@@ -28,10 +28,11 @@ def webhook():
     update = request.json
     if app.debug:
         print json.dumps(update, indent=4)
-    handle_message(update.get('message'))
+    handle_message.delay(update.get('message'))
     return ''
 
 
+@job('reply', connection=SYSTEMS['default'], result_ttl=5)
 def handle_message(message):
     text = message.get('text', '').strip()
     # photo = message.get('photo', {})
@@ -44,7 +45,6 @@ def handle_message(message):
     #     send_reply(text='很好，我收到了一张图片，然而这并没有什么卯月', message=message)
 
 
-@job('reply', connection=SYSTEMS['default'], result_ttl=5)
 def handle_command(text, message, debug=False):
     if '/debug' in text \
             and message['from']['username'] in config.get('admins'):
