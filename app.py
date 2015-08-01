@@ -12,7 +12,7 @@ __bot_name__ = 'eth0_bot'
 __author__ = 'Joker_Qyou'
 
 app = flask.Flask(__name__)
-app.debug = True
+app.debug = config.DEBUG
 
 bot = telegram.Bot(token=config.TOKEN)
 bot.setWebhook('%s/%s' % (config.SERVER, config.TOKEN.split(':')[-1], ))

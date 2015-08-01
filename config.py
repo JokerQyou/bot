@@ -16,6 +16,7 @@ PATH = '/%s' % '/'.join(
     config['server'].replace('https://', '')
     .replace('http://', '').split('/')[1:]
 )
+DEBUG = config.get('debug', False)
 
 TOKEN = config.get('token')
 SERVER = config.get('server')

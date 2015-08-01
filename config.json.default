@@ -1,4 +1,5 @@
 {
+    "debug": False, 
     "token": "123456789:ehuidfhgksdjbfuyhsbhjfdkj", 
     "server": "test.com/bot", 
     "port": 9003, 
