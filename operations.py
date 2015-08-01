@@ -1,6 +1,6 @@
 # coding: utf-8
 import telegram
-from rq import job
+from rq.decorators import job
 from redis_wrap import SYSTEMS
 
 import config
@@ -13,7 +13,8 @@ bot = None
 @job('reply', connection=SYSTEMS['default'], result_ttl=5)
 def handle_message(message, telegram_bot=None):
     global bot
-    if not telegram_bot:
+    if telegram_bot is None:
+        print 'no bot'
         bot = telegram.Bot(token=config.TOKEN)
         bot.setWebhook('%s/%s' %
                        (config.SERVER, config.TOKEN.split(':')[-1], ))
