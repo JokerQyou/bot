@@ -11,7 +11,7 @@ import config
 from utils import *
 import botcommands
 
-__name__ = 'eth0_bot'
+__bot_name__ = 'eth0_bot'
 __author__ = 'Joker_Qyou'
 
 app = flask.Flask(__name__)
@@ -108,5 +108,5 @@ def send_reply(text=None, photo=None, emoji=None,
 def main():
     app.run(host='0.0.0.0', port=config.PORT)
 
-if __name__ in ('__main__', u'eth0_bot', ):
+if __name__ in ('__main__', __bot_name__, ):
     main()
