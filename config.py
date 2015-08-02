@@ -28,7 +28,7 @@ redis = SYSTEMS['default']
 def get(key, default=None):
     ''' Get raw config from redis with a prefix '''
     list_keys = ('admins', )
-    hash_keys = (None, )
+    hash_keys = ('conversations', )
     string_keys = ('owner', )
     real_key = '%s:%s' % (str(__name__), key, )
     if key in list_keys:
