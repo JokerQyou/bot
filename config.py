@@ -63,7 +63,7 @@ def require_admin(func):
         msg = kwargs.get('msg', None) if len(args) == 0 else args[0]
         if not msg:
             return ''
-        if msg['from']['username'] not in get('admins'):
+        if msg.from_user.name not in get('admins'):
             return u'这个功能只有管理员可以使用'
         return func(*args, **kwargs)
     return wrapper
