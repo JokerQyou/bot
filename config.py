@@ -51,10 +51,13 @@ def set(key, value):
 def init_redis():
     admins = get('admins')
     owner = get('owner')
+    c_owner = config.get('owner')
     if len(admins) == 0:
-        [admins.append(admin) for admin in config.get('admins')]
-    if owner != config.get('owner'):
-        set('owner', config.get('owner'))
+        [admins.append(admin if admin.startswith('@') else '@%s' % admin)
+            for admin in config.get('admins')]
+    if owner != c_owner:
+        set('owner',
+            (c_owner if c_owner.startswith('@') else '@%s' % c_owner))
 
 
 def require_admin(func):
