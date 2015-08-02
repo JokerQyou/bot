@@ -22,11 +22,11 @@ bot.setWebhook('%s/%s' % (config.SERVER, config.TOKEN.split(':')[-1], ))
            methods=('POST', ))
 def webhook():
     ''' WebHook API func '''
-    update = request.json
     if app.debug:
-        print json.dumps(update, indent=4)
-    operations.handle_message.delay(update.get('message'),
-                                    telegram_bot=bot)
+        print json.dumps(request.json, indent=4)
+    update = telegram.Update.de_json(request.json)
+    operations.handle_update.delay(update,
+                                   telegram_bot=bot)
     return ''
 
 

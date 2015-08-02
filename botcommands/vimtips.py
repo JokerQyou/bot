@@ -6,6 +6,7 @@ from redis_wrap import get_hash, SYSTEMS
 from rq.decorators import job
 
 from config import require_admin
+from utils import extract_texts
 
 
 def vimtips(msg=None, debug=False):
@@ -40,10 +41,14 @@ def vimtips(msg=None, debug=False):
 def addvimtip(msg=None, debug=False):
     '''（管理员）添加一条 vim 使用技巧'''
     usage = '命令格式：\n/addvimtip [/forceadd]\n内容\n解释'
-    if not msg or not msg.get('text'):
+    if msg.text is None:
         return usage
-    force_add = '/forceadd' in msg.get('text')
-    parts = [i.strip() for i in msg.get('text').strip().split('\n')]
+    command, options, words = extract_texts(msg.text)
+    if not words:
+        return usage
+    force_add = '/forceadd' in options
+    # We do not want words here, we want lines
+    parts = [i.strip() for i in msg.text.strip().split('\n')]
     if len(parts) < 3 or not all([bool(i) for i in parts]):
         return usage
 

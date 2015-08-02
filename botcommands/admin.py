@@ -7,21 +7,19 @@ from utils import extract_texts
 @require_admin
 def listadmin(msg=None, debug=False):
     '''（管理员）列出管理员'''
-    return u'当前的管理员：\n%s' % u'\n'.join(
-        [u'@%s' % person for person in config.get('admins')]
-    )
+    return u'当前的管理员：\n%s' % u'\n'.join(config.get('admins'))
 
 
 @require_admin
 def addadmin(msg=None, debug=False):
     '''（管理员）添加管理员'''
-    command, options, words = extract_texts(msg['text'])
+    command, options, words = extract_texts(msg.text)
     if not words:
         return u'拜托，你想添加谁为管理员？一次性说完啦！'
     admins = config.get('admins')
     added = []
     for person in words:
-        _admin = person[1:] if person.startswith('@') else person
+        _admin = person if person.startswith('@') else '@%s' % person
         if _admin not in admins:
             admins.append(_admin)
             added.append(_admin)
@@ -33,16 +31,16 @@ def addadmin(msg=None, debug=False):
 def deladmin(msg=None, debug=False):
     '''（管理员）删除管理员'''
     admins = config.get('admins')
-    command, options, words = extract_texts(msg['text'])
+    command, options, words = extract_texts(msg.text)
     non_admins, removed = [], []
     failed = []
     response = u''
     if not words:
         return u'拜托，你想删除谁的管理员权限？一次性说完啦！'
     for person in words:
-        _admin = person[1:] if person.startswith('@') else person
+        _admin = person if person.startswith('@') else '@%s' % person
         # Cannot delete self
-        if _admin == msg['from']['username']:
+        if _admin == msg.from_user.name:
             failed.append(_admin)
             continue
         # Cannot delete owner

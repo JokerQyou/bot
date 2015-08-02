@@ -12,5 +12,5 @@ def start(msg=None, debug=False):
     admins = list(config.get('admins'))
     admins_striped = list(set(admins + [owner]))
     admins_striped.remove(owner)
-    admins_striped = u'、'.join([u'@%s' % person for person in admins_striped])
+    admins_striped = u'、'.join(admins_striped)
     return about_text % (__bot__, owner, admins_striped, )

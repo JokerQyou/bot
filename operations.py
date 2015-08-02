@@ -11,7 +11,7 @@ bot = None
 
 
 @job('reply', connection=SYSTEMS['default'], result_ttl=5)
-def handle_message(message, telegram_bot=None):
+def handle_update(update, telegram_bot=None):
     global bot
     if telegram_bot is None:
         print 'no bot'
@@ -21,22 +21,30 @@ def handle_message(message, telegram_bot=None):
     else:
         bot = telegram_bot
 
-    text = message.get('text', '').strip()
-    # photo = message.get('photo', {})
-    if text:
+    if message.text:
+        text = message.text.strip()
         if text.startswith('/'):
             handle_command(text, message)
         else:
             handle_text(text, message)
-    # if photo:
-    #     send_reply(text='很好，我收到了一张图片，然而这并没有什么卯月', message=message)
+    elif message.photo:
+        pass
+    elif message.video:
+        pass
+    elif message.document:
+        pass
+    elif message.audio:
+        pass
+    elif message.location:
+        pass
 
 
 def handle_command(text, message, debug=False):
+    # Admins can toggle debug mode for commands
     if '/debug' in text \
-            and message['from']['username'] in config.get('admins'):
+            and message.from_user.name in config.get('admins'):
         debug = True
-    command, options, words = extract_texts(message.get('text'))
+    command, options, words = extract_texts(message.text)
     if not smart_text(command).isalnum():
         return send_reply(text='机器人酱并不懂你发的那是什么玩意', message=message)
     if command == 'ls':
@@ -85,8 +93,8 @@ def send_reply(text=None, photo=None, emoji=None,
         action = 'upload_document'
     elif location:
         action = 'find_location'
-    bot.sendChatAction(chat_id=message.get('chat').get('id'),
+    bot.sendChatAction(chat_id=message.chat_id,
                        action=action)
     bot.sendMessage(text=smart_text(text),
-                    chat_id=message.get('chat').get('id'),
-                    reply_to_message_id=message.get('message_id'))
+                    chat_id=message.chat_id,
+                    reply_to_message_id=message.message_id)
