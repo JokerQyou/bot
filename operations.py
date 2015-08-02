@@ -21,6 +21,7 @@ def handle_update(update, telegram_bot=None):
     else:
         bot = telegram_bot
 
+    message = update.message
     if message.text:
         text = message.text.strip()
         if text.startswith('/'):
