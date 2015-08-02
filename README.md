@@ -15,3 +15,7 @@ python -u worker.py # this starts the rq worker
 python app.py # this starts the flask webserver
 # and you might want to put the flask webserver behind nginx or something
 ```
+
+License
+
+BSD license, see LICENSE file.
