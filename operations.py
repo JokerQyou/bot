@@ -59,7 +59,6 @@ def handle_command(text, message, debug=False):
         send_reply(text=text, message=message)
 
 
-@config.require_admin
 def list_commands(msg, debug=False):
     '''List all commands available'''
     commands = []
@@ -67,6 +66,7 @@ def list_commands(msg, debug=False):
         attr = getattr(botcommands, command)
         if callable(attr):
             commands.append('%s - %s\n' % (command, attr.func_doc, ))
+    commands.append('help - 列出所有可用的命令')
     return ''.join(commands)
 
 
