@@ -26,12 +26,12 @@ def handle_update(update, telegram_bot=None):
     conversations = config.get('conversations')
     if message.left_chat_participant is not None:
         if message.left_chat_participant.name[1:] == config.__name__:
-            del conversations[message.chat_id]
-    if message.chat_id not in conversations:
+            del conversations[str(message.chat_id)]
+    if str(message.chat_id) not in conversations:
         if isinstance(message.chat, (telegram.User, )):
-            conversations[message.chat_id] = message.chat.name
+            conversations[str(message.chat_id)] = message.chat.name
         elif isinstance(message.chat, (telegram.GroupChat, )):
-            conversations[message.chat_id] = message.chat.title
+            conversations[str(message.chat_id)] = message.chat.title
 
     if message.text:
         text = message.text.strip()
