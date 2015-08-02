@@ -48,7 +48,7 @@ def handle_command(text, message, debug=False):
     command, options, words = extract_texts(message.text)
     if not smart_text(command).isalnum():
         return send_reply(text='机器人酱并不懂你发的那是什么玩意', message=message)
-    if command == 'ls':
+    if command in ('ls', 'help', ):
         return send_reply(text=list_commands(message, debug=debug),
                           message=message)
     if hasattr(botcommands, command):
