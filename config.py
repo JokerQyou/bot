@@ -36,7 +36,7 @@ def get(key, default=None):
     elif key in hash_keys:
         return get_hash(real_key)
     elif key in string_keys:
-        r = redis.get(key)
+        r = redis.get(real_key)
         if r is None:
             r = default
         return r
@@ -45,6 +45,7 @@ def get(key, default=None):
 def set(key, value):
     string_keys = ('owner', )
     if key in string_keys:
+        key = '%s:%s' % (str(__name__), key, )
         redis.set(key, value)
 
 
@@ -52,12 +53,12 @@ def init_redis():
     admins = get('admins')
     owner = get('owner')
     c_owner = config.get('owner')
+    c_owner = c_owner if c_owner.startswith('@') else '@%s' % c_owner
     if len(admins) == 0:
         [admins.append(admin if admin.startswith('@') else '@%s' % admin)
             for admin in config.get('admins')]
     if owner != c_owner:
-        set('owner',
-            (c_owner if c_owner.startswith('@') else '@%s' % c_owner))
+        set('owner', c_owner)
 
 
 def require_admin(func):
