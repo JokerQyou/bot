@@ -1,4 +1,8 @@
 {
+    "webhook": true, 
+    "use_nginx": true, 
+    "ssl_cert": "/path/to/cert/file", 
+    "ssl_key": "/path/to/key/file", 
     "debug": False, 
     "token": "123456789:ehuidfhgksdjbfuyhsbhjfdkj", 
     "server": "test.com/bot", 

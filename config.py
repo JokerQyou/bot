@@ -18,9 +18,12 @@ PATH = '/%s' % '/'.join(
 )
 DEBUG = config.get('debug', False)
 
-TOKEN = config.get('token')
-SERVER = config.get('server')
-PORT = config.get('port')
+for k in config.keys():
+    if isinstance(config[k], (str, unicode, )):
+        template = '%s="%s"'
+    else:
+        template = '%s=%s'
+    eval(template % (k.upper(), config[k]))
 
 redis = SYSTEMS['default']
 
