@@ -14,13 +14,13 @@ __author__ = 'Joker_Qyou'
 
 app = None
 bot = telegram.Bot(token=config.TOKEN)
-bot.setWebhook('%s/%s' % (config.SERVER,
-                          config.TOKEN.split(':')[-1], ))
 
 
 def main():
     if config.WEBHOOK:
         global app, bot
+        bot.setWebhook('%s/%s' % (config.SERVER,
+                                  config.TOKEN.split(':')[-1], ))
         app = flask.Flask(__name__)
         app.debug = config.DEBUG
 
@@ -47,9 +47,10 @@ def main():
                                  'and having debug mode enabled'))
             app.run(host='0.0.0.0', port=config.PORT)
     else:
+        bot.setWebhook('')
         while 1:
             time.sleep(config.FETCH_INTERVAL)
-            updates = bot.getUpdates()
+            updates = bot.getUpdates(timeout=config.FETCH_INTERVAL)
             for update in updates:
                 operations.handle_update(update)
 
