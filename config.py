@@ -23,7 +23,7 @@ for k in config.keys():
         template = '%s="%s"'
     else:
         template = '%s=%s'
-    eval(template % (k.upper(), config[k]))
+    exec(template % (k.upper(), config[k]))
 
 redis = SYSTEMS['default']
 
