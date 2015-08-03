@@ -1,6 +1,5 @@
 # coding: utf-8
 import json
-import ssl
 
 import flask
 from flask import request
@@ -40,16 +39,14 @@ def main():
         if config.USE_NGINX:
             app.run(host='0.0.0.0', port=config.PORT)
         else:
+            raise NotImplementedError('Not implemented yet, sorry')
             if 'SSL_CERT' not in dir(config)\
                     or 'SSL_KEY' not in dir(config):
                 raise RuntimeError('Missing SSL cert or key')
-            context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-            context.load_cert_chain(config.SSL_CERT, config.SSL_KEY)
             if config.DEBUG:
                 app.logger.warn(('You are running Flask without nginx '
                                  'and having debug mode enabled'))
-            app.run(host=config.SERVER, port=config.PORT,
-                    ssl_context=context)
+            app.run(host='0.0.0.0', port=config.PORT)
     else:
         while 1:
             time.sleep(config.FETCH_INTERVAL)
