@@ -13,17 +13,16 @@ __bot_name__ = 'eth0_bot'
 __author__ = 'Joker_Qyou'
 
 app = None
+bot = telegram.Bot(token=config.TOKEN)
+bot.setWebhook('%s/%s' % (config.SERVER,
+                          config.TOKEN.split(':')[-1], ))
 
 
 def main():
     if config.WEBHOOK:
-        global app
+        global app, bot
         app = flask.Flask(__name__)
         app.debug = config.DEBUG
-
-        bot = telegram.Bot(token=config.TOKEN)
-        bot.setWebhook('%s/%s' % (config.SERVER,
-                                  config.TOKEN.split(':')[-1], ))
 
         @app.route('%s/%s' % (config.PATH, config.TOKEN.split(':')[-1], ),
                    methods=('POST', ))
