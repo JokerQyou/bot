@@ -27,6 +27,7 @@ def handle_update(update, telegram_bot=None):
     if message.left_chat_participant is not None:
         if message.left_chat_participant.name[1:] == config.__name__:
             del conversations[str(message.chat_id)]
+            return
     if str(message.chat_id) not in conversations:
         if isinstance(message.chat, (telegram.User, )):
             conversations[str(message.chat_id)] = message.chat.name
