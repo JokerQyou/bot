@@ -1,5 +1,6 @@
 {
     "webhook": true, 
+    "fetch_interval": 1, 
     "use_nginx": true, 
     "ssl_cert": "/path/to/cert/file", 
     "ssl_key": "/path/to/key/file", 
