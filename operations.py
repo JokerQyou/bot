@@ -16,8 +16,11 @@ def handle_update(update, telegram_bot=None):
     if telegram_bot is None:
         print 'no bot'
         bot = telegram.Bot(token=config.TOKEN)
-        bot.setWebhook('%s/%s' %
-                       (config.SERVER, config.TOKEN.split(':')[-1], ))
+        if config.WEBHOOK:
+            bot.setWebhook('%s/%s' %
+                           (config.SERVER, config.TOKEN.split(':')[-1], ))
+        else:
+            bot.setWebHook('')
     else:
         bot = telegram_bot
 
