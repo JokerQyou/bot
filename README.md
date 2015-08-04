@@ -16,6 +16,6 @@ python app.py # this starts the flask webserver
 # and you might want to put the flask webserver behind nginx or something
 ```
 
-License
+# License
 
 BSD license, see LICENSE file.
