@@ -39,14 +39,15 @@ def main():
         if config.USE_NGINX:
             app.run(host='0.0.0.0', port=config.PORT)
         else:
-            raise NotImplementedError('Not implemented yet, sorry')
+            # raise NotImplementedError('Not implemented yet, sorry')
             if 'SSL_CERT' not in dir(config)\
                     or 'SSL_KEY' not in dir(config):
                 raise RuntimeError('Missing SSL cert or key')
             if config.DEBUG:
                 app.logger.warn(('You are running Flask without nginx '
                                  'and having debug mode enabled'))
-            app.run(host='0.0.0.0', port=config.PORT)
+            app.run(host='0.0.0.0', port=config.PORT,
+                    ssl_context=(config.SSL_CERT, config.SSL_KEY))
     else:
         # Clear the webhook to use getUpdates API
         bot.setWebhook('')
@@ -56,7 +57,8 @@ def main():
         print last_update_id
         while 1:
             time.sleep(config.FETCH_INTERVAL)
-            updates = bot.getUpdates(timeout=config.FETCH_INTERVAL, offset=last_update_id)
+            updates = bot.getUpdates(timeout=config.FETCH_INTERVAL,
+                                     offset=last_update_id)
             for update in updates:
                 if last_update_id < update.update_id:
                     operations.handle_update(update, telegram_bot=bot)
