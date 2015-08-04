@@ -47,12 +47,20 @@ def main():
                                  'and having debug mode enabled'))
             app.run(host='0.0.0.0', port=config.PORT)
     else:
+        # Clear the webhook to use getUpdates API
         bot.setWebhook('')
+        last_update_id = config.get('last_update_id')
+        if last_update_id is not None:
+            last_update_id = int(last_update_id)
         while 1:
             time.sleep(config.FETCH_INTERVAL)
-            updates = bot.getUpdates(timeout=config.FETCH_INTERVAL)
+            updates = bot.getUpdates(timeout=config.FETCH_INTERVAL, offset=last_update_id)
             for update in updates:
                 operations.handle_update(update)
+            try:
+                config.set('last_update_id', updates[-1].update_id)
+            except IndexError:
+                pass
 
 if __name__ in ('__main__', __bot_name__, ):
     main()
