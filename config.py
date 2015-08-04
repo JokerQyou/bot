@@ -16,7 +16,6 @@ PATH = '/%s' % '/'.join(
     config['server'].replace('https://', '')
     .replace('http://', '').split('/')[1:]
 )
-DEBUG = config.get('debug', False)
 
 for k in config.keys():
     if isinstance(config[k], (str, unicode, )):
@@ -32,7 +31,7 @@ def get(key, default=None):
     ''' Get raw config from redis with a prefix '''
     list_keys = ('admins', )
     hash_keys = ('conversations', )
-    string_keys = ('owner', )
+    string_keys = ('owner', 'last_update_id', )
     real_key = '%s:%s' % (str(__name__), key, )
     if key in list_keys:
         return get_list(real_key)
@@ -46,7 +45,7 @@ def get(key, default=None):
 
 
 def set(key, value):
-    string_keys = ('owner', )
+    string_keys = ('owner', 'last_update_id', )
     if key in string_keys:
         key = '%s:%s' % (str(__name__), key, )
         redis.set(key, value)
