@@ -61,6 +61,9 @@ def main():
                 config.set('last_update_id', updates[-1].update_id)
             except IndexError:
                 pass
+            last_update_id = config.get('last_update_id')
+            if last_update_id is not None:
+                last_update_id = int(last_update_id)
 
 if __name__ in ('__main__', __bot_name__, ):
     main()
