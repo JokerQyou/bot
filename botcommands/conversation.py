@@ -2,6 +2,7 @@
 import config
 
 
+@config.require_admin
 def lsconversation(msg=None, debug=False):
     '''列出参与的所有会话'''
     conversations = config.get('conversations')
