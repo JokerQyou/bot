@@ -17,8 +17,9 @@ bot = telegram.Bot(token=config.TOKEN)
 
 
 def main():
+    global bot
     if config.WEBHOOK:
-        global app, bot
+        global app
         bot.setWebhook('%s/%s' % (config.SERVER,
                                   config.TOKEN.split(':')[-1], ))
         app = flask.Flask(__name__)
@@ -52,18 +53,19 @@ def main():
         last_update_id = config.get('last_update_id')
         if last_update_id is not None:
             last_update_id = int(last_update_id)
+        print last_update_id
         while 1:
             time.sleep(config.FETCH_INTERVAL)
             updates = bot.getUpdates(timeout=config.FETCH_INTERVAL, offset=last_update_id)
             for update in updates:
-                operations.handle_update(update)
-            try:
-                config.set('last_update_id', updates[-1].update_id)
-            except IndexError:
-                pass
-            last_update_id = config.get('last_update_id')
-            if last_update_id is not None:
-                last_update_id = int(last_update_id)
+                if last_update_id < update.update_id:
+                    operations.handle_update(update, telegram_bot=bot)
+                    try:
+                        config.set('last_update_id', update.update_id)
+                    except IndexError:
+                        pass
+                    last_update_id = update.update_id
+                    print last_update_id
 
 if __name__ in ('__main__', __bot_name__, ):
     main()
