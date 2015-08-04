@@ -20,7 +20,7 @@ def handle_update(update, telegram_bot=None):
             bot.setWebhook('%s/%s' %
                            (config.SERVER, config.TOKEN.split(':')[-1], ))
         else:
-            bot.setWebHook('')
+            bot.setWebhook('')
     else:
         bot = telegram_bot
 
