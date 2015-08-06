@@ -14,3 +14,6 @@ def start(msg=None, debug=False):
     admins_striped.remove(owner)
     admins_striped = u'、'.join(admins_striped)
     return about_text % (__bot__, owner, admins_striped, )
+
+
+about = start
