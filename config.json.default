@@ -14,5 +14,13 @@
         "host": "localhost", 
         "port": 6379, 
         "db": 0
+    },
+    "mqtt": {
+        "host": "localhost",
+        "port": 1883,
+        "topic": "pi_command",
+        "qos": 1,
+        "username": "user",
+        "password": "pass"
     }
 }

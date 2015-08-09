@@ -3,7 +3,9 @@ from functools import wraps
 from os import path
 import json
 
+import certifi
 from redis_wrap import get_hash, get_list, SYSTEMS
+import paho.mqtt.publish as publish
 
 __name__ = 'eth0_bot'
 __bot__ = 'eth0'
@@ -73,5 +75,19 @@ def require_admin(func):
             return u'这个功能只有管理员可以使用'
         return func(*args, **kwargs)
     return wrapper
+
+
+def pi_command(func):
+    @wraps(func)
+    def wrapper(msg=None, debug=False):
+        return publish.single(
+            MQTT['topic'], payload=json.dumps(msg),
+            qos=MQTT['qos'], hostname=MQTT['host'],
+            port=MQTT['port'], client_id='%s:client' % __name__,
+            keepalive=60, tls={'ca_certs': certifi.where()},
+            auth={'username': MQTT['username'], 'password': MQTT['password']}
+        )
+    return wrapper
+
 
 init_redis()
