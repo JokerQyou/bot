@@ -2,6 +2,7 @@
 from functools import wraps
 from os import path
 import json
+import ssl
 
 import certifi
 from redis_wrap import get_hash, get_list, SYSTEMS
@@ -84,8 +85,14 @@ def pi_command(func):
             MQTT['topic'], payload=msg.to_json(),
             qos=MQTT['qos'], hostname=MQTT['host'],
             port=MQTT['port'], client_id='%s:client' % __name__,
-            keepalive=60, tls={'ca_certs': certifi.where()},
-            auth={'username': MQTT['username'], 'password': MQTT['password']}
+            keepalive=60, tls={
+                'ca_certs': certifi.where(),
+                'tls_version': ssl.PROTOCOL_TLSv1
+            },
+            auth={
+                'username': MQTT['username'],
+                'password': MQTT['password']
+            }
         )
     return wrapper
 
