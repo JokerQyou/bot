@@ -78,11 +78,10 @@ def require_admin(func):
 
 
 def pi_command(func):
-    global MQTT
     @wraps(func)
     def wrapper(msg=None, debug=False):
         return publish.single(
-            MQTT['topic'], payload=json.dumps(msg),
+            MQTT['topic'], payload=msg.to_json(),
             qos=MQTT['qos'], hostname=MQTT['host'],
             port=MQTT['port'], client_id='%s:client' % __name__,
             keepalive=60, tls={'ca_certs': certifi.where()},
