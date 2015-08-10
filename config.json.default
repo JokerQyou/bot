@@ -4,7 +4,7 @@
     "use_nginx": true, 
     "ssl_cert": "/path/to/cert/file", 
     "ssl_key": "/path/to/key/file", 
-    "debug": False, 
+    "debug": false, 
     "token": "123456789:ehuidfhgksdjbfuyhsbhjfdkj", 
     "server": "test.com/bot", 
     "port": 9003, 
@@ -18,7 +18,7 @@
     "mqtt": {
         "host": "localhost",
         "port": 1883,
-        "topic": "pi_command",
+        "topic": "picommand",
         "qos": 1,
         "username": "user",
         "password": "pass"
