@@ -78,6 +78,7 @@ def require_admin(func):
 
 
 def pi_command(func):
+    global MQTT
     @wraps(func)
     def wrapper(msg=None, debug=False):
         return publish.single(
