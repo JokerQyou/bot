@@ -19,7 +19,7 @@ def on_msg(client, config, mqtt_msg):
             'text': 'received by RaspberryPi'
         }
         client.publish(config.get('return_topic'),
-                       return_msg,
+                       json.dumps(return_msg),
                        qos=config.get('qos'))
     except Exception as e:
         client.logger.warn(e)
@@ -38,6 +38,7 @@ def on_disconnect(client, config, return_code):
 
 def on_connect(client, config, flags, return_code):
     client.logger.info(u'connected, code: %d', return_code)
+    client.logger.debug(u'subscribing %s', config.get('topic'))
     client.subscribe(str(config.get('topic')), config.get('qos'))
 
 
@@ -119,3 +120,7 @@ def main():
 
     client = PiClient(config, handlers)
     client.start()
+    # client.join()
+
+if __name__ == '__main__':
+    main()
