@@ -1,6 +1,7 @@
 # coding: utf-8
 import json
 import logging
+import threading
 # import time
 
 import certifi
@@ -41,7 +42,7 @@ def on_publish(client, userdata, mid):
     client.logger.info(u'Message %s sent', str(mid))
 
 
-class PiClient(object):
+class PiClient(threading.Thread):
     '''
     A client which connects to Mosca server and receive commands from there,
     and return local queried result.
@@ -77,7 +78,7 @@ class PiClient(object):
         logger.setLevel(logging.DEBUG)
         setattr(self.__client, 'logger', logger)
 
-    def start(self):
+    def run(self):
         port = self.config.get(
             'port',
             (8883 if self.config.get('use_ssl', False) else 1883)

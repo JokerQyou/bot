@@ -84,6 +84,22 @@ def handle_command(text, message, debug=False):
         send_reply(text=text, message=message)
 
 
+@job('reply', connection=SYSTEMS['default'], result_ttl=5)
+def handle_pi_command(msg_payload):
+    try:
+        msg = json.loads(msg_payload)
+        reply_to = telegram.Message.de_json(msg['reply_to'])
+        return send_reply(text=msg.get('text', None),
+                          photo=msg.get('photo', None),
+                          emoji=msg.get('emoji', None),
+                          audio=msg.get('audio', None),
+                          video=msg.get('video', None),
+                          location=msg.get('location', None),
+                          message=reply_to)
+    except Exception as e:
+        print e
+
+
 def list_commands(msg, debug=False):
     '''List all commands available'''
     commands = []

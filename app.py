@@ -8,16 +8,27 @@ import time
 
 import config
 import operations
+from client import PiClient, handlers
 
 __bot_name__ = 'eth0_bot'
 __author__ = 'Joker_Qyou'
 
-app = None
+app, client = None, None
 bot = telegram.Bot(token=config.TOKEN)
 
 
+def on_mqtt_msg(client, userdata, mqtt_msg):
+    return operations.handle_pi_command(mqtt_msg.payload)
+
+
 def main():
-    global bot
+    global bot, client, handlers
+
+    handlers['on_message'] = on_mqtt_msg
+    client = PiClient(config.MQTT, handlers)
+    client.daemon = True
+    client.start()
+
     if config.WEBHOOK:
         global app
         bot.setWebhook('%s/%s' % (config.SERVER,

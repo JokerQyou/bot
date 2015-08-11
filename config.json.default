@@ -21,6 +21,7 @@
         "topic": "picommand",
         "qos": 1,
         "username": "user",
-        "password": "pass"
+        "password": "pass",
+        "use_ssl": true
     }
 }
