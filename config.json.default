@@ -22,6 +22,7 @@
         "qos": 1,
         "username": "user",
         "password": "pass",
-        "use_ssl": true
+        "use_ssl": true,
+        "return_topic": "piresult"
     }
 }

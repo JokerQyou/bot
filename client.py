@@ -10,10 +10,17 @@ import paho.mqtt.client as mqtt
 __config__ = 'config.json'
 
 
-def on_msg(client, userdata, mqtt_msg):
+def on_msg(client, config, mqtt_msg):
     try:
         msg = json.loads(mqtt_msg.payload)
         client.logger.debug(msg)
+        return_msg = {
+            'reply_to': msg,
+            'text': 'received by RaspberryPi'
+        }
+        client.publish(config.get('return_topic'),
+                       return_msg,
+                       qos=config.get('qos'))
     except Exception as e:
         client.logger.warn(e)
         return

@@ -25,6 +25,9 @@ def main():
     global bot, client, handlers
 
     handlers['on_message'] = on_mqtt_msg
+    (config.MQTT['topic'],
+     config.MQTT['return_topic']) = (config.MQTT['return_topic'],
+                                     config.MQTT['topic'])
     client = PiClient(config.MQTT, handlers)
     client.daemon = True
     client.start()
