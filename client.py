@@ -63,6 +63,7 @@ class PiClient(threading.Thread):
             protocol=mqtt.MQTTv31,
             clean_session=mqtt_config.get('clean_session', True)
         )
+        self.__init_logger()
         if mqtt_config.get('use_ssl', False):
             self.__client.tls_set(certifi.where())
 
