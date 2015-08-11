@@ -56,6 +56,7 @@ class PiClient(threading.Thread):
     '''
 
     def __init__(self, mqtt_config, handlers):
+        super(PiClient, self).__init__()
         self.config = mqtt_config
         self.__client = mqtt.Client(
             client_id=mqtt_config.get('client_id'),
