@@ -1,4 +1,6 @@
 # coding: utf-8
+import json
+
 import telegram
 from rq.decorators import job
 from redis_wrap import SYSTEMS
