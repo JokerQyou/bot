@@ -8,29 +8,18 @@ import paho.mqtt.client as mqtt
 
 __config__ = 'config.json'
 
-logger = logging.getLogger(__name__)
-sh = logging.StreamHandler()
-sh.setLevel(logging.DEBUG)
-logger.addHandler(sh)
-logger.setLevel(logging.DEBUG)
-
-
-with open(__config__) as crf:
-    config = json.load(crf)['mqtt']
-    crf.close()
-
 
 def on_msg(client, userdata, mqtt_msg):
     try:
         msg = json.loads(mqtt_msg.payload)
-        print msg
+        client.logger.debug(msg)
     except Exception as e:
-        print e
+        client.logger.warn(e)
         return
 
 
-def on_disconnect(client, userdata, return_code):
-    logger.info(u'disconnected, code: %d, will reconnect', return_code)
+def on_disconnect(client, config, return_code):
+    client.logger.info(u'disconnected, code: %d, will reconnect', return_code)
     port = config.get('port', (8883 if config.get('use_ssl', False) else 1883))
     client.connect(
         config.get('host'),
@@ -39,17 +28,17 @@ def on_disconnect(client, userdata, return_code):
     )
 
 
-def on_connect(client, userdata, flags, return_code):
-    logger.info(u'connected, code: %d', return_code)
+def on_connect(client, config, flags, return_code):
+    client.logger.info(u'connected, code: %d', return_code)
     client.subscribe(str(config.get('topic')), config.get('qos'))
 
 
 def on_subscribe(client, userdata, mid, granted_qos):
-    logger.info(u'Subscribed with %s', granted_qos)
+    client.logger.info(u'Subscribed with %s', granted_qos)
 
 
 def on_publish(client, userdata, mid):
-    logger.info(u'Message %s sent', str(mid))
+    client.logger.info(u'Message %s sent', str(mid))
 
 
 class PiClient(object):
@@ -59,6 +48,7 @@ class PiClient(object):
     '''
 
     def __init__(self, mqtt_config, handlers):
+        self.config = mqtt_config
         self.__client = mqtt.Client(
             client_id=mqtt_config.get('client_id'),
             protocol=mqtt.MQTTv31,
@@ -68,9 +58,10 @@ class PiClient(object):
             self.__client.tls_set(certifi.where())
 
         self.__client.username_pw_set(
-            config.get('username'),
-            config.get('password')
+            mqtt_config.get('username'),
+            mqtt_config.get('password')
         )
+        self.__client.user_data_set(self.config)
 
         self.__client.on_message = handlers.get('on_message', None)
         self.__client.on_subscribe = handlers.get('on_subscribe', None)
@@ -78,18 +69,26 @@ class PiClient(object):
         self.__client.on_disconnect = handlers.get('on_disconnect', None)
         self.__client.on_connect = handlers.get('on_connect', None)
 
-        port = mqtt_config.get(
+    def __init_logger(self):
+        logger = logging.getLogger(__name__)
+        sh = logging.StreamHandler()
+        sh.setLevel(logging.DEBUG)
+        logger.addHandler(sh)
+        logger.setLevel(logging.DEBUG)
+        setattr(self.__client, 'logger', logger)
+
+    def start(self):
+        port = self.config.get(
             'port',
-            (8883 if mqtt_config.get('use_ssl', False) else 1883)
+            (8883 if self.config.get('use_ssl', False) else 1883)
         )
         self.__client.connect(
-            mqtt_config.get('host'),
+            self.config.get('host'),
             port=port,
-            keepalive=mqtt_config.get('keepalive', 60)
+            keepalive=self.config.get('keepalive', 60)
         )
         self.__client.loop_forever()
 
-config['use_ssl'] = True
 handlers = {
     'on_message': on_msg,
     'on_subscribe': on_subscribe,
@@ -98,4 +97,12 @@ handlers = {
     'on_disconnect': on_disconnect,
 }
 
-client = PiClient(config, handlers)
+
+def main():
+    with open(__config__) as crf:
+        config = json.load(crf)['mqtt']
+        crf.close()
+    config['use_ssl'] = True
+
+    client = PiClient(config, handlers)
+    client.start()
