@@ -29,7 +29,7 @@ def main():
      config.MQTT['return_topic']) = (config.MQTT['return_topic'],
                                      config.MQTT['topic'])
     client = PiClient(config.MQTT, handlers)
-    client.daemon = True
+    client.setDaemon(True)
     client.start()
 
     if config.WEBHOOK:
