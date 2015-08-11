@@ -28,6 +28,7 @@ def main():
     (config.MQTT['topic'],
      config.MQTT['return_topic']) = (config.MQTT['return_topic'],
                                      config.MQTT['topic'])
+    config.MQTT['client_id'] = 'bot_side'
     client = PiClient(config.MQTT, handlers)
     client.setDaemon(True)
     client.start()

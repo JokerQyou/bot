@@ -112,7 +112,10 @@ def main():
     with open(__config__) as crf:
         config = json.load(crf)['mqtt']
         crf.close()
-    config['use_ssl'] = True
+    config.update({
+        'use_ssl': True,
+        'client_id': 'pi_side',
+    })
 
     client = PiClient(config, handlers)
     client.start()
