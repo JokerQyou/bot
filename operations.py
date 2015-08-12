@@ -18,11 +18,6 @@ def handle_update(update, telegram_bot=None):
     if telegram_bot is None:
         print 'no bot'
         bot = telegram.Bot(token=config.TOKEN)
-        if config.WEBHOOK:
-            bot.setWebhook('%s/%s' %
-                           (config.SERVER, config.TOKEN.split(':')[-1], ))
-        else:
-            bot.setWebhook('')
     else:
         bot = telegram_bot
 
@@ -91,6 +86,8 @@ def handle_pi_command(msg_payload, telegram_bot=None):
     global bot
     if telegram_bot is None:
         bot = telegram.Bot(token=config.TOKEN)
+    else:
+        bot = telegram_bot
     try:
         msg = json.loads(msg_payload)
         reply_to = telegram.Message.de_json(msg['reply_to'])
