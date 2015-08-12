@@ -87,7 +87,10 @@ def handle_command(text, message, debug=False):
 
 
 @job('reply', connection=SYSTEMS['default'], result_ttl=5)
-def handle_pi_command(msg_payload):
+def handle_pi_command(msg_payload, telegram_bot=None):
+    global bot
+    if telegram_bot is None:
+        bot = telegram.Bot(token=config.TOKEN)
     try:
         msg = json.loads(msg_payload)
         reply_to = telegram.Message.de_json(msg['reply_to'])

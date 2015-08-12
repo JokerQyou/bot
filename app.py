@@ -18,7 +18,8 @@ bot = telegram.Bot(token=config.TOKEN)
 
 
 def on_mqtt_msg(client, userdata, mqtt_msg):
-    return operations.handle_pi_command.delay(mqtt_msg.payload)
+    return operations.handle_pi_command.delay(mqtt_msg.payload,
+                                              telegram_bot=bot)
 
 
 def main():
