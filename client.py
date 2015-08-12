@@ -88,7 +88,7 @@ class PiClient(threading.Thread):
         logger.setLevel(logging.DEBUG)
         setattr(self.__client, 'logger', logger)
 
-    def run(self):
+    def __reconnect(self):
         port = self.config.get(
             'port',
             (8883 if self.config.get('use_ssl', False) else 1883)
@@ -99,6 +99,12 @@ class PiClient(threading.Thread):
             keepalive=self.config.get('keepalive', 60)
         )
         self.__client.loop_forever()
+
+    def run(self):
+        try:
+            self.__reconnect()
+        except Exception:
+            self.__reconnect()
 
 handlers = {
     'on_message': on_msg,
@@ -118,9 +124,13 @@ def main():
         'client_id': 'pi_side',
     })
 
-    client = PiClient(config, handlers)
-    client.start()
-    # client.join()
+    while 1:
+        try:
+            client = PiClient(config, handlers)
+            client.start()
+            client.join()
+        except Exception:
+            pass
 
 if __name__ == '__main__':
     main()
