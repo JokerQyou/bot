@@ -80,6 +80,8 @@ class PiClient(threading.Thread):
         self.__client.on_disconnect = handlers.get('on_disconnect', None)
         self.__client.on_connect = handlers.get('on_connect', None)
 
+        self._stop = threading.Event()
+
     def __init_logger(self):
         logger = logging.getLogger(__name__)
         sh = logging.StreamHandler()
@@ -87,6 +89,13 @@ class PiClient(threading.Thread):
         logger.addHandler(sh)
         logger.setLevel(logging.DEBUG)
         setattr(self.__client, 'logger', logger)
+
+    def stop(self):
+        self._stop.set()
+
+    @property
+    def stopped(self):
+        return self._stop.isSet()
 
     def __reconnect(self):
         port = self.config.get(
@@ -104,7 +113,8 @@ class PiClient(threading.Thread):
         try:
             self.__reconnect()
         except Exception:
-            self.__reconnect()
+            self.stop()
+            print 'Stopped: ', self.stopped
 
 handlers = {
     'on_message': on_msg,
@@ -130,7 +140,8 @@ def main():
             client.start()
             client.join()
         except Exception:
-            pass
+            if 'client' in locals():
+                del client
 
 if __name__ == '__main__':
     main()
