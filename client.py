@@ -17,10 +17,10 @@ def on_msg(client, config, mqtt_msg):
     try:
         msg = json.loads(mqtt_msg.payload)
         t_msg = telegram.Message.de_json(msg)
-        client.logger.debug(t_msg.id)
+        client.logger.debug(t_msg.message_id)
         return_msg = {
             'reply_to': msg,
-            'text': 'Pi: {}'.format(handle_client_command(t_msg))
+            'text': u'Pi: {}'.format(handle_client_command(t_msg))
         }
         client.publish(config.get('return_topic'),
                        json.dumps(return_msg),
@@ -43,7 +43,9 @@ def handle_client_command(t_msg):
         except ImportError:
             return u'没有安装 uptime 模块哦'
         else:
-            return uptime.boottime().strftime('本地时间 %Y年%m月%d日 %H:%M:%S')
+            return u'启动于 北京时间 {}'.format(
+                uptime.boottime().strftime('%Y-%m-%d %H:%M:%S')
+            )
     elif subcommand == '/free':
         try:
             import psutil
@@ -52,8 +54,8 @@ def handle_client_command(t_msg):
         else:
             memory_usage = psutil.virtual_memory()
             swap_usage = psutil.swap_memory()
-            return (u'内存使用率 {:.2f}%，共有 {d} MB\n'
-                    u'SWAP 使用率 {:.2f}%，共有 {d} MB').format(
+            return (u'内存使用率 {:.2f}%，共有 {:d} MB\n'
+                    u'SWAP 使用率 {:.2f}%，共有 {:d} MB').format(
                 memory_usage.percent, memory_usage.total / 1024 / 1024,
                 swap_usage.percent, swap_usage.total / 1024 / 1024
             )
