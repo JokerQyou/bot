@@ -4,8 +4,11 @@ import logging
 import threading
 # import time
 
+import telegram
 import certifi
 import paho.mqtt.client as mqtt
+
+from utils import extract_texts
 
 __config__ = 'config.json'
 
@@ -13,10 +16,11 @@ __config__ = 'config.json'
 def on_msg(client, config, mqtt_msg):
     try:
         msg = json.loads(mqtt_msg.payload)
-        client.logger.debug(msg)
+        t_msg = telegram.Message.de_json(msg)
+        client.logger.debug(t_msg.id)
         return_msg = {
             'reply_to': msg,
-            'text': 'received by RaspberryPi'
+            'text': 'Pi: {}'.format(handle_client_command(t_msg))
         }
         client.publish(config.get('return_topic'),
                        json.dumps(return_msg),
@@ -24,6 +28,35 @@ def on_msg(client, config, mqtt_msg):
     except Exception as e:
         client.logger.warn(e)
         return
+
+
+def handle_client_command(t_msg):
+    command, options, words = extract_texts(t_msg.text)
+    if command != 'pi':
+        return u'并不懂你在说什么'
+    subcommand = options[-1] if len(options) > 0 else '/ping'
+    if subcommand in ('/ping', '/pong', ):
+        return 'pong' if subcommand == '/ping' else 'ping'
+    elif subcommand == '/uptime':
+        try:
+            import uptime
+        except ImportError:
+            return u'没有安装 uptime 模块哦'
+        else:
+            return uptime.boottime().strftime('本地时间 %Y年%m月%d日 %H:%M:%S')
+    elif subcommand == '/free':
+        try:
+            import psutil
+        except ImportError:
+            return u'没有安装 psutil 模块哦'
+        else:
+            memory_usage = psutil.virtual_memory()
+            swap_usage = psutil.swap_memory()
+            return (u'内存使用率 {:.2f}%，共有 {d} MB\n'
+                    u'SWAP 使用率 {:.2f}%，共有 {d} MB').format(
+                memory_usage.percent, memory_usage.total / 1024 / 1024,
+                swap_usage.percent, swap_usage.total / 1024 / 1024
+            )
 
 
 def on_disconnect(client, config, return_code):
