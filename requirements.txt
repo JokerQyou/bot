@@ -6,3 +6,5 @@ paho-mqtt
 requests
 rq
 certifi
+uptime
+psutil
