@@ -77,7 +77,7 @@ def main():
                                      offset=last_update_id)
             for update in updates:
                 if last_update_id < update.update_id:
-                    operations.handle_update(update, telegram_bot=bot)
+                    operations.handle_update.delay(update, telegram_bot=bot)
                     try:
                         config.set('last_update_id', update.update_id)
                     except IndexError:
