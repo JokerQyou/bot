@@ -1,8 +1,10 @@
 # coding: utf-8
+import os
+from fractions import Fraction
 import json
 import logging
 import threading
-# import time
+import time
 
 import telegram
 import certifi
@@ -11,6 +13,7 @@ import paho.mqtt.client as mqtt
 from utils import extract_texts
 
 __config__ = 'config.json'
+config = {}
 
 
 def on_msg(client, config, mqtt_msg):
@@ -20,8 +23,8 @@ def on_msg(client, config, mqtt_msg):
         client.logger.debug(t_msg.message_id)
         return_msg = {
             'reply_to': msg,
-            'text': u'Pi: {}'.format(handle_client_command(t_msg))
         }
+        return_msg.update(handle_client_command(t_msg))
         client.publish(config.get('return_topic'),
                        json.dumps(return_msg),
                        qos=config.get('qos'))
@@ -33,7 +36,8 @@ def on_msg(client, config, mqtt_msg):
 def handle_client_command(t_msg):
     command, options, words = extract_texts(t_msg.text)
     if command != 'pi':
-        return u'并不懂你在说什么'
+        return {
+            'text': u'并不懂你在说什么'}
     if len(options) > 0:
         subcommand = options[0][1:]  # drop the leading slash
     else:
@@ -42,29 +46,87 @@ def handle_client_command(t_msg):
         else:
             subcommand = 'ping'
     if subcommand in ('ping', 'pong', ):
-        return 'pong' if subcommand == 'ping' else 'ping'
+        return {
+            'text': ('pong' if subcommand == 'ping' else 'ping')
+        }
     elif subcommand == 'uptime':
         try:
             import uptime
         except ImportError:
-            return u'没有安装 uptime 模块哦'
+            return {
+                'text': u'没有安装 uptime 模块哦'
+            }
         else:
-            return u'启动于 北京时间 {}'.format(
-                uptime.boottime().strftime('%Y-%m-%d %H:%M:%S')
-            )
+            return {
+                'text': u'启动于 北京时间 {}'.format(
+                    uptime.boottime().strftime('%Y-%m-%d %H:%M:%S')
+                )
+            }
     elif subcommand == 'free':
         try:
             import psutil
         except ImportError:
-            return u'没有安装 psutil 模块哦'
+            return {
+                'text': u'没有安装 psutil 模块哦'
+            }
         else:
             memory_usage = psutil.virtual_memory()
             swap_usage = psutil.swap_memory()
-            return (u'内存使用率 {:.2f}%，共有 {:d} MB\n'
-                    u'SWAP 使用率 {:.2f}%，共有 {:d} MB').format(
-                memory_usage.percent, memory_usage.total / 1024 / 1024,
-                swap_usage.percent, swap_usage.total / 1024 / 1024
-            )
+            return {
+                'text': (u'内存使用率 {:.2f}%，共有 {:d} MB\n'
+                         u'SWAP 使用率 {:.2f}%，共有 {:d} MB').format(
+                             memory_usage.percent, memory_usage.total / 1024 / 1024,
+                             swap_usage.percent, swap_usage.total / 1024 / 1024
+                    )
+            }
+    elif subcommand == 'photo':
+        return {'text': 'not implemented yet'}  # opt out temporarily
+        return {
+            'photo': upload_photo()
+        }
+    else:
+        return {
+            'text': u'当听不懂你在说什么时，我会假装看风景'
+        }
+
+
+def upload_photo():
+    '''上传照片到七牛，并返回私有链接地址'''
+    from qiniu import Auth
+    from qiniu import put_file
+    import picamera
+    import tempfile
+    global config
+    progress_handler = lambda progress, total: progress
+
+    # Take a photo
+    annotate_text = time.strftime('%Y/%m/%d %H:%M:%S')
+    resolution = (800, 450, )
+    with picamera.PiCamera() as camera:
+        camera.annotate_text_size = 64
+        camera.framerate = Fraction(15, 1)
+        camera.awb_mode = 'fluorescent'
+        camera.iso = 600
+        fd, photo_path = tempfile.mkstemp(suffix='.jpg', prefix='pi-')
+        os.close(fd)
+        time.sleep(1)
+        annotate_text = annotate_text + ' offset +1s'
+        camera.annotate_text = annotate_text
+        camera.capture(photo_path, resize=resolution)
+
+    # Upload to qiniu
+    mime_type = 'image/jpeg'
+    q = Auth(config['qiniu']['api_key'], config['qiniu']['secret'])
+    filename = os.path.basename(photo_path)
+    token = q.upload_token(config['qiniu']['bucket'], filename)
+    ret, info = put_file(token, filename, photo_path, {}, mime_type,
+                         progress_handler=progress_handler)
+    print ret, info
+    os.remove(photo_path)
+
+    # Return URL
+    base_url = 'http://%s/%s' % (config['qiniu']['domain'], filename)
+    return q.private_download_url(base_url, expires=3600)
 
 
 def on_disconnect(client, config, return_code):
@@ -168,7 +230,12 @@ handlers = {
 
 def main():
     with open(__config__) as crf:
-        config = json.load(crf)['mqtt']
+        global config
+        _config = json.load(crf)
+        config = _config['mqtt']
+        config.update({
+            'owner': config['owner']
+        })
         crf.close()
     config.update({
         'use_ssl': True,

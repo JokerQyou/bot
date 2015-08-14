@@ -129,6 +129,12 @@ def send_reply(text=None, photo=None, emoji=None,
     action = 'typing'
     if photo:
         action = 'upload_photo'
+        bot.sendChatAction(chat_id=message.chat_id,
+                           action=action)
+        bot.sendPhoto(message.chat_id,
+                      photo,
+                      reply_to_message_id=message.message_id)
+        return
     elif audio:
         action = 'upload_audio'
     elif video:
@@ -139,6 +145,6 @@ def send_reply(text=None, photo=None, emoji=None,
         action = 'find_location'
     bot.sendChatAction(chat_id=message.chat_id,
                        action=action)
-    bot.sendMessage(text=smart_text(text),
-                    chat_id=message.chat_id,
+    bot.sendMessage(message.chat_id,
+                    smart_text(text),
                     reply_to_message_id=message.message_id)
