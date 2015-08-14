@@ -34,10 +34,16 @@ def handle_client_command(t_msg):
     command, options, words = extract_texts(t_msg.text)
     if command != 'pi':
         return u'并不懂你在说什么'
-    subcommand = options[-1] if len(options) > 0 else '/ping'
-    if subcommand in ('/ping', '/pong', ):
-        return 'pong' if subcommand == '/ping' else 'ping'
-    elif subcommand == '/uptime':
+    if len(options) > 0:
+        subcommand = options[0][1:]  # drop the leading slash
+    else:
+        if len(words) > 0:
+            subcommand = words[0]
+        else:
+            subcommand = 'ping'
+    if subcommand in ('ping', 'pong', ):
+        return 'pong' if subcommand == 'ping' else 'ping'
+    elif subcommand == 'uptime':
         try:
             import uptime
         except ImportError:
@@ -46,7 +52,7 @@ def handle_client_command(t_msg):
             return u'启动于 北京时间 {}'.format(
                 uptime.boottime().strftime('%Y-%m-%d %H:%M:%S')
             )
-    elif subcommand == '/free':
+    elif subcommand == 'free':
         try:
             import psutil
         except ImportError:
