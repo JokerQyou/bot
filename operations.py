@@ -124,10 +124,7 @@ def send_reply(text=None, photo=None, emoji=None,
     if not message:
         raise RuntimeError('Dont know the chat id')
     # Currently text reply is the only supported type
-    if not text:
-        return
     action = 'typing'
-    print photo
     if photo:
         action = 'upload_photo'
         bot.sendChatAction(chat_id=message.chat_id,
