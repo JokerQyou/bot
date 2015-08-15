@@ -142,7 +142,7 @@ def upload_photo():
     os.remove(photo_path)
 
     # Return URL
-    base_url = 'http://%s/%s' % (config['qiniu']['domain'], filename)
+    base_url = '{}/{}'.format(str(config['qiniu']['domain']), filename)
     return auth.private_download_url(base_url, expires=3600)
 
 
