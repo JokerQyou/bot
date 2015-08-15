@@ -24,5 +24,11 @@
         "password": "pass",
         "use_ssl": true,
         "return_topic": "piresult"
+    },
+    "qiniu": {
+        "api_key": "key",
+        "secret": "api_secret",
+        "bucket": "bucket_name",
+        "domain": "bucket_domain"
     }
 }

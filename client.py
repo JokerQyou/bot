@@ -1,10 +1,13 @@
 # coding: utf-8
 import os
+import sys
+import traceback
 from fractions import Fraction
 import json
 import logging
 import threading
 import time
+from datetime import datetime
 
 import telegram
 import certifi
@@ -29,11 +32,16 @@ def on_msg(client, config, mqtt_msg):
                        json.dumps(return_msg),
                        qos=config.get('qos'))
     except Exception as e:
-        client.logger.warn(e)
-        return
+        client.logger.error(e)
+        e_type, e_value, tb = sys.exc_info()
+        client.logger.error('{0} - Uncaught exception: {1}: {2}\n{3}'.format(
+            datetime.strftime(datetime.now(), '%H:%M:%S'),
+            str(e_type), str(e_value), ''.join(traceback.format_tb(tb))
+        ))
 
 
 def handle_client_command(t_msg):
+    global config
     command, options, words = extract_texts(t_msg.text)
     if command != 'pi':
         return {
@@ -80,7 +88,11 @@ def handle_client_command(t_msg):
                     )
             }
     elif subcommand == 'photo':
-        return {'text': 'not implemented yet'}  # opt out temporarily
+        if t_msg.from_user.name != config['owner']\
+                and t_msg.from_user.name[1:] != config['owner']:
+            return {
+                'text': u'区区凡人，竟敢对我下这种命令'
+            }
         return {
             'photo': upload_photo()
         }
@@ -107,7 +119,8 @@ def upload_photo():
         camera.framerate = Fraction(15, 1)
         camera.awb_mode = 'fluorescent'
         camera.iso = 600
-        fd, photo_path = tempfile.mkstemp(suffix='.jpg', prefix='pi-')
+        fd, photo_path = tempfile.mkstemp(suffix='.jpg', prefix='pi')
+        print fd, photo_path
         os.close(fd)
         time.sleep(1)
         annotate_text = annotate_text + ' offset +1s'
@@ -116,17 +129,21 @@ def upload_photo():
 
     # Upload to qiniu
     mime_type = 'image/jpeg'
-    q = Auth(config['qiniu']['api_key'], config['qiniu']['secret'])
+    auth = Auth(str(config['qiniu']['api_key']),
+                str(config['qiniu']['secret']))
+    print auth
     filename = os.path.basename(photo_path)
-    token = q.upload_token(config['qiniu']['bucket'], filename)
+    print 'filename: ', filename, type(filename)
+    token = auth.upload_token(str(config['qiniu']['bucket']))
+    print token
     ret, info = put_file(token, filename, photo_path, {}, mime_type,
                          progress_handler=progress_handler)
-    print ret, info
+    print 'uploaded: ', ret, info
     os.remove(photo_path)
 
     # Return URL
     base_url = 'http://%s/%s' % (config['qiniu']['domain'], filename)
-    return q.private_download_url(base_url, expires=3600)
+    return auth.private_download_url(base_url, expires=3600)
 
 
 def on_disconnect(client, config, return_code):
@@ -200,6 +217,21 @@ class PiClient(threading.Thread):
     def stopped(self):
         return self._stop.isSet()
 
+    def loop(self):
+        while 1:
+            try:
+                self.__client.loop_write()
+                time.sleep(1)
+                self.__client.loop_read()
+                time.sleep(1)
+                self.__client.loop_misc()
+            except Exception as e:
+                print 'Thread stop due to exception: ', e
+                self.stop()
+            finally:
+                if self.stopped:
+                    break
+
     def __reconnect(self):
         port = self.config.get(
             'port',
@@ -210,14 +242,10 @@ class PiClient(threading.Thread):
             port=port,
             keepalive=self.config.get('keepalive', 60)
         )
-        self.__client.loop_forever()
+        self.loop()
 
     def run(self):
-        try:
-            self.__reconnect()
-        except Exception:
-            self.stop()
-            print 'Stopped: ', self.stopped
+        return self.__reconnect()
 
 handlers = {
     'on_message': on_msg,
@@ -231,20 +259,16 @@ handlers = {
 def main():
     with open(__config__) as crf:
         global config
-        _config = json.load(crf)
-        config = _config['mqtt']
-        config.update({
-            'owner': config['owner']
-        })
+        config = json.load(crf)
         crf.close()
-    config.update({
+    config['mqtt'].update({
         'use_ssl': True,
         'client_id': 'pi_side',
     })
 
     while 1:
         try:
-            client = PiClient(config, handlers)
+            client = PiClient(config['mqtt'], handlers)
             client.start()
             client.join()
         except Exception:
