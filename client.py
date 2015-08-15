@@ -122,7 +122,9 @@ def upload_photo():
         fd, photo_path = tempfile.mkstemp(suffix='.jpg', prefix='pi')
         print fd, photo_path
         os.close(fd)
-        time.sleep(1)
+        time.sleep(1)  # wait a second for iso and white balance
+        # and my camera is up side down, so rotate 180 deg
+        camera.rotation = 180
         annotate_text = annotate_text + ' offset +1s'
         camera.annotate_text = annotate_text
         camera.capture(photo_path, resize=resolution)
