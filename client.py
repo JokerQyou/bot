@@ -223,9 +223,7 @@ class PiClient(threading.Thread):
         while 1:
             try:
                 self.__client.loop_write()
-                time.sleep(1)
                 self.__client.loop_read()
-                time.sleep(1)
                 self.__client.loop_misc()
             except Exception as e:
                 print 'Thread stop due to exception: ', e
