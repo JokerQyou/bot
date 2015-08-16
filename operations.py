@@ -75,7 +75,8 @@ def handle_command(text, message, debug=False):
                           message=message)
     if hasattr(botcommands, command):
         result = getattr(botcommands, command)(message, debug=debug)
-        return send_reply(text=result, message=message)
+        if result is not None:
+            return send_reply(text=result, message=message)
     if debug:
         text = u'%s 命令现在并没有什么卯月' % command
         send_reply(text=text, message=message)
