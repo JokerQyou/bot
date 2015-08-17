@@ -99,8 +99,15 @@ def handle_pi_command(msg_payload, telegram_bot=None):
                           video=msg.get('video', None),
                           location=msg.get('location', None),
                           message=reply_to)
-    except Exception as e:
-        print e
+    except Exception:
+        try:
+            return send_plain_text(
+                text=msg.get('text', None),
+                photo=msg.get('photo', None),
+                message=reply_to
+            )
+        except Exception:
+            print extract_traceback()
 
 
 def list_commands(msg, debug=False):
@@ -117,6 +124,18 @@ def list_commands(msg, debug=False):
 def handle_text(text, message):
     text = u'%s: %s' % (u'复读机', text, )
     # send_reply(text=text, message=message)
+
+
+def send_plain_text(text=None, photo=None, message=None, reply=True):
+    if photo and 'http' in photo:
+        content = photo
+    elif text:
+        content = text
+    bot.sendChatAction(chat_id=message.chat_id,
+                       action='typing')
+    bot.sendMessage(message.chat_id,
+                    smart_text(content),
+                    reply_to_message_id=message.message_id)
 
 
 def send_reply(text=None, photo=None, emoji=None,
