@@ -1,19 +1,16 @@
 # coding: utf-8
 import os
-import sys
-import traceback
 from fractions import Fraction
 import json
 import logging
 import threading
 import time
-from datetime import datetime
 
 import telegram
 import certifi
 import paho.mqtt.client as mqtt
 
-from utils import extract_texts
+from utils import extract_texts, extract_traceback
 
 __config__ = 'config.json'
 config = {}
@@ -32,12 +29,7 @@ def on_msg(client, config, mqtt_msg):
                        json.dumps(return_msg),
                        qos=config.get('qos'))
     except Exception as e:
-        client.logger.error(e)
-        e_type, e_value, tb = sys.exc_info()
-        client.logger.error('{0} - Uncaught exception: {1}: {2}\n{3}'.format(
-            datetime.strftime(datetime.now(), '%H:%M:%S'),
-            str(e_type), str(e_value), ''.join(traceback.format_tb(tb))
-        ))
+        client.logger.error(extract_traceback())
 
 
 def handle_client_command(t_msg):
