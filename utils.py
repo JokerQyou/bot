@@ -1,5 +1,8 @@
 # coding: utf-8
 import six
+import sys
+import traceback
+from datetime import datetime
 
 
 def smart_text(s, encoding='utf-8', strings_only=False, errors='strict'):
@@ -89,3 +92,12 @@ def extract_texts(text):
             words.append(t)
 
     return command, options, words
+
+
+def extract_traceback():
+    ''' Extract traceback info '''
+    e_type, e_value, tb = sys.exc_info()
+    return '{0} - Uncaught exception: {1}: {2}\n{3}'.format(
+        datetime.strftime(datetime.now(), '%H:%M:%S'),
+        str(e_type), str(e_value), ''.join(traceback.format_tb(tb))
+    )
