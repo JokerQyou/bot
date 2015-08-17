@@ -6,6 +6,7 @@ import logging
 import threading
 import time
 
+import requests
 import telegram
 import certifi
 import paho.mqtt.client as mqtt
@@ -28,7 +29,7 @@ def on_msg(client, config, mqtt_msg):
         client.publish(config.get('return_topic'),
                        json.dumps(return_msg),
                        qos=config.get('qos'))
-    except Exception as e:
+    except Exception:
         client.logger.error(extract_traceback())
 
 
@@ -88,10 +89,34 @@ def handle_client_command(t_msg):
         return {
             'photo': upload_photo()
         }
+    elif subcommand in ('temp', 'temperature', 'pressure', 'env', ):
+        return {
+            'text': read_env(subcommand)
+        }
     else:
         return {
             'text': u'当听不懂你在说什么时，我会假装看风景'
         }
+
+
+def read_env(which):
+    try:
+        data = requests.get('http://127.0.0.1:9876/sensors/env').json()
+    except Exception:
+        print extract_traceback()
+        text = u'读取传感器数据时出错，可能 pitools 服务未运行'
+    else:
+        if which in ('temp', 'temperature', ):
+            text = u'温度：{:.2f}摄氏度'.format(data['temperature'])
+        elif which == 'pressure':
+            text = u'大气压：{:.3f}千帕'.format(data['pressure'] / 1000.0)
+        elif which == 'env':
+            text = u'温度：{:.2f}摄氏度，大气压{:.3f}千帕'.format(
+                data['temperature'],
+                data['pressure'] / 1000.0
+            )
+    finally:
+        return text
 
 
 def upload_photo():
