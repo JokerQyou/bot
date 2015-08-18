@@ -3,6 +3,7 @@ import six
 import sys
 import traceback
 from datetime import datetime
+from config import __name__
 
 
 def smart_text(s, encoding='utf-8', strings_only=False, errors='strict'):
@@ -84,6 +85,8 @@ def extract_texts(text):
     if not texts[0].startswith('/'):
         raise RuntimeError('这跟说好的不一样啊')
     command = texts[0][1:]  # Drop the starting slash
+    if '@' in command:
+        command = command.replace('@{}'.format(__name__), '')
     words, options = [], []
     for t in texts[1:]:
         if t.startswith('/'):
