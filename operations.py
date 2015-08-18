@@ -26,7 +26,7 @@ def handle_update(update, telegram_bot=None):
     conversations = config.get('conversations')
     str_chat_id = str(message.chat_id)
     if message.left_chat_participant is not None:
-        if message.left_chat_participant.name[1:] == config.__name__:
+        if str(message.left_chat_participant.name[1:]) == config.__name__:
             del conversations[str_chat_id]
             return
     # Store chat info if it does not exist
