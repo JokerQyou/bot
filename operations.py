@@ -73,7 +73,7 @@ def handle_command(text, message, debug=False):
     if '/debug' in text \
             and message.from_user.name in config.get('admins'):
         debug = True
-    if config.__name__ not in text.split('@'):
+    if '@' in text and config.__name__ not in text.split('@'):
         return
     command, options, words = extract_texts(message.text)
     if not smart_text(command).isalnum():
