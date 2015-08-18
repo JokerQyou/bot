@@ -24,9 +24,11 @@ def handle_update(update, telegram_bot=None):
     message = update.message
     # Save conversation info
     conversations = config.get('conversations')
-    str_chat_id = str(message.chat_id)
+    str_chat_id = smart_text(message.chat_id)
     if message.left_chat_participant is not None:
-        if str(message.left_chat_participant.name[1:]) == config.__name__:
+        if smart_text(
+            message.left_chat_participant.name[1:]
+        ) == config.__name__:
             del conversations[str_chat_id]
             return
     # Store chat info if it does not exist
@@ -38,10 +40,14 @@ def handle_update(update, telegram_bot=None):
     else:
         # Update chat info if it changed
         if isinstance(message.chat, (telegram.User, ))\
-                and str(message.chat.name) != str(onversations[str_chat_id]):
+                and smart_text(
+                    message.chat.name
+                ) != smart_text(onversations[str_chat_id]):
             conversations[str_chat_id] = message.chat.name
         elif isinstance(message.chat, (telegram.GroupChat, ))\
-                and str(message.chat.title) != str(conversations[str_chat_id]):
+                and smart_text(
+                    message.chat.title
+                ) != smart_text(conversations[str_chat_id]):
             conversations[str_chat_id] = message.chat.title
 
     if message.text:
