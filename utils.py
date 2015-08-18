@@ -1,15 +1,8 @@
 # coding: utf-8
-import functools
 import six
 import sys
 import traceback
 from datetime import datetime
-import json
-
-from rq import Queue
-from redis_wrap import SYSTEMS
-import telegram
-
 from config import __name__
 
 
@@ -111,22 +104,3 @@ def extract_traceback():
         datetime.strftime(datetime.now(), '%H:%M:%S'),
         str(e_type), str(e_value), ''.join(traceback.format_tb(tb))
     )
-
-
-def queue(func):
-    @functools.wraps(func)
-    def _wrapper(*args, **kwargs):
-        if isinstance(args[0], (str, unicode, )):
-            try:
-                mqtt_msg = json.loads(args[0])
-                queue_name = str(mqtt_msg['reply_to']['message_id'])[-1]
-            except Exception:
-                queue_name = 'reply'
-        elif isinstance(args[0], (telegram.Update, )):
-            queue_name = str(args[0].update_id)[-1]
-        else:
-            queue_name = 'reply'
-        print 'will work in queue {}'.format(queue_name)
-        q = Queue(queue_name, connection=SYSTEMS['default'])
-        q.enqueue(func, *args, **kwargs)
-    return _wrapper
