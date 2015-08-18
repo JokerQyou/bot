@@ -2,8 +2,6 @@
 import json
 
 import telegram
-from rq.decorators import job
-from redis_wrap import SYSTEMS
 
 import config
 import botcommands
@@ -12,7 +10,7 @@ from utils import *
 bot = None
 
 
-@job('reply', connection=SYSTEMS['default'], result_ttl=5)
+@quque
 def handle_update(update, telegram_bot=None):
     global bot
     if telegram_bot is None:
@@ -90,7 +88,7 @@ def handle_command(text, message, debug=False):
         send_reply(text=text, message=message)
 
 
-@job('reply', connection=SYSTEMS['default'], result_ttl=5)
+@queue
 def handle_pi_command(msg_payload, telegram_bot=None):
     global bot
     if telegram_bot is None:
