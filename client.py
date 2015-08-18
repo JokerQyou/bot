@@ -248,6 +248,7 @@ class PiClient(threading.Thread):
             finally:
                 if self.stopped:
                     break
+                time.sleep(0.1)
 
     def __reconnect(self):
         port = self.config.get(
