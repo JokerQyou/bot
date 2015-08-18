@@ -21,7 +21,8 @@ with open(__config__, 'r') as crf:
 def main():
     global redis_config
     not redis_config and sys.exit('Missing redis config')
-    listen = ('high', 'default', 'reply', 'low', )
+    listen = ['high', 'default', 'reply', 'low', ]
+    listen.extend(map(range(10), str))
     conn = Redis(**redis_config)
     with Connection(conn):
         worker = Worker(map(Queue, listen))
