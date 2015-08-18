@@ -38,10 +38,10 @@ def handle_update(update, telegram_bot=None):
     else:
         # Update chat info if it changed
         if isinstance(message.chat, (telegram.User, ))\
-                and message.chat.name != conversations[str_chat_id]:
+                and str(message.chat.name) != str(onversations[str_chat_id]):
             conversations[str_chat_id] = message.chat.name
         elif isinstance(message.chat, (telegram.GroupChat, ))\
-                and message.chat.title != conversations[str_chat_id]:
+                and str(message.chat.title) != str(conversations[str_chat_id]):
             conversations[str_chat_id] = message.chat.title
 
     if message.text:
