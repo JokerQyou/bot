@@ -2,3 +2,4 @@
 *.json
 *.swp
 .DS_Store
+qiniutest.py
