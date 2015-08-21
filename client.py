@@ -1,12 +1,11 @@
 # coding: utf-8
 import os
-from fractions import Fraction
 import json
 import logging
 import threading
 import time
 
-import requests
+from requests import get as http_get
 import telegram
 import certifi
 import paho.mqtt.client as mqtt
@@ -101,7 +100,7 @@ def handle_client_command(t_msg):
 
 def read_env(which):
     try:
-        data = requests.get('http://127.0.0.1:9876/sensors/env').json()
+        data = http_get('http://127.0.0.1:9876/sensors/env').json()
     except Exception:
         print extract_traceback()
         text = u'读取传感器数据时出错，可能 pitools 服务未运行'
@@ -123,29 +122,10 @@ def upload_photo():
     '''上传照片到七牛，并返回私有链接地址'''
     from qiniu import Auth
     from qiniu import put_file
-    import picamera
-    import tempfile
     global config
     progress_handler = lambda progress, total: progress
 
-    # Take a photo
-    annotate_text = time.strftime('%Y/%m/%d %H:%M:%S')
-    resolution = (800, 450, )
-    with picamera.PiCamera() as camera:
-        camera.annotate_text_size = 64
-        camera.framerate = Fraction(15, 1)
-        camera.awb_mode = 'fluorescent'
-        camera.iso = 600
-        fd, photo_path = tempfile.mkstemp(suffix='.jpg', prefix='pi')
-        print fd, photo_path
-        os.close(fd)
-        time.sleep(1)  # wait a second for iso and white balance
-        # and my camera is up side down, so rotate 180 deg
-        camera.rotation = 180
-        annotate_text = annotate_text + ' offset +1s'
-        camera.annotate_text = annotate_text
-        camera.capture(photo_path, resize=resolution)
-
+    photo_path = http_get('http://127.0.0.1:9876/photo/shot').content
     # Upload to qiniu
     mime_type = 'image/jpeg'
     auth = Auth(str(config['qiniu']['api_key']),
@@ -158,7 +138,10 @@ def upload_photo():
     ret, info = put_file(token, filename, photo_path, {}, mime_type,
                          progress_handler=progress_handler)
     print 'uploaded: ', ret, info
-    os.remove(photo_path)
+    try:
+        os.remove(photo_path)
+    except Exception:
+        pass
 
     # Return URL
     base_url = '{}/{}'.format(str(config['qiniu']['domain']), filename)
