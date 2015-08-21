@@ -42,7 +42,7 @@ def handle_update(update, telegram_bot=None):
         if isinstance(message.chat, (telegram.User, ))\
                 and smart_text(
                     message.chat.name
-                ) != smart_text(onversations[str_chat_id]):
+                ) != smart_text(conversations[str_chat_id]):
             conversations[str_chat_id] = message.chat.name
         elif isinstance(message.chat, (telegram.GroupChat, ))\
                 and smart_text(
