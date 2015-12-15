@@ -6,7 +6,6 @@ import ssl
 
 import certifi
 from redis_wrap import get_hash, get_list, SYSTEMS
-import paho.mqtt.publish as publish
 
 __name__ = 'eth0_bot'
 __bot__ = 'eth0'
@@ -81,19 +80,7 @@ def require_admin(func):
 def pi_command(func):
     @wraps(func)
     def wrapper(msg=None, debug=False):
-        return publish.single(
-            MQTT['topic'], payload=msg.to_json(),
-            qos=MQTT['qos'], hostname=MQTT['host'],
-            port=MQTT['port'], client_id='%s:client' % __name__,
-            keepalive=60, tls={
-                'ca_certs': certifi.where(),
-                'tls_version': ssl.PROTOCOL_TLSv1
-            },
-            auth={
-                'username': MQTT['username'],
-                'password': MQTT['password']
-            }
-        )
+        return u'Not implemented'
     return wrapper
 
 
