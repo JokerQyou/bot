@@ -6,7 +6,8 @@ This is the source behind the Telegram bot [@eth0]( https://telegram.me/eth0_bot
 
 # Notice
 
-This project is under construction on `x-develop` branch.
+* Due to the evolution of upstream package `python-telegram-bot`, most of the code is no longer following best practice, and will be refactored once I have time.
+* This project is under construction on `x-develop` branch.
 
 If you've got some inspirations from it, it would be nice to
 have them shared publicly (of course it's up to you).
