@@ -4,6 +4,8 @@ A telegram bot.
 
 This is the source behind the Telegram bot [@eth0]( https://telegram.me/eth0_bot ).
 
+**The above statement is not true anymore since 2015.12.15. This project is left here in the hope that it would be helpful, it will not receive any update anymore, and the source code might be (or have already been) out dated. If you want examples and tutorials about Telegram bot in Python, please refer to [the python-telegram-bot project](https://github.com/python-telegram-bot/python-telegram-bot/) .**
+
 # Notice
 
 * Due to the evolution of upstream package `python-telegram-bot`, most of the code is no longer following best practice, and will be refactored once I have time.
